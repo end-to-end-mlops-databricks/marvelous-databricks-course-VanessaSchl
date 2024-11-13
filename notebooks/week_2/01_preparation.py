@@ -1,4 +1,7 @@
 # Databricks notebook source
+# MAGIC %pip install ../hotel_reservations-1.0.1-py3-none-any.whl
+
+# COMMAND ----------
 import pandas as pd
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor

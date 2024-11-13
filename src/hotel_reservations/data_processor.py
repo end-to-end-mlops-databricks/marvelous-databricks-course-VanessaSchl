@@ -58,7 +58,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         target = self.config["target"]
         num_features = self.config["num_features"]
 
-        relevant_columns = num_features self.fe_features + [target]
+        relevant_columns = num_features + self.fe_features + [target]
 
         return X[relevant_columns]
 
