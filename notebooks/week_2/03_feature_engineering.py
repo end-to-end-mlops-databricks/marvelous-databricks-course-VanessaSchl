@@ -110,10 +110,11 @@ training_df = training_set.load_df().toPandas()
 test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
 
 # Split features and target
-X_train = training_df[num_features + ["no_of_nights"]]
-y_train = training_df[target]
-X_test = test_set[num_features + ["no_of_nights"]]
-y_test = test_set[target]
+y_train = train_set[config["original_target"]]
+X_train = train_set.drop(columns=config["original_target"])
+
+y_test = test_set[config["original_target"]]
+X_test = test_set.drop(columns=config["original_target"])
 
 # Setup model pipeline
 pipeline = Pipeline(

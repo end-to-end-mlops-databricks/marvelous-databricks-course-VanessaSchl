@@ -37,11 +37,11 @@ print("Test set shape:", test_set.shape)
 
 # COMMAND ----------
 # Split data into features and target
-X_train = train_set[config["num_features"]]
-y_train = train_set[config["target"]]
+y_train = train_set[config["original_target"]]
+X_train = train_set.drop(columns=config["original_target"])
 
-X_test = test_set[config["num_features"]]
-y_test = test_set[config["target"]]
+y_test = test_set[config["original_target"]]
+X_test = test_set.drop(columns=config["original_target"])
 
 # COMMAND ----------
 # Preprocess the data

@@ -45,4 +45,4 @@ cat_features:
 
 original_target: booking_status
 
-target: booking_status_canceled
+target: canceled

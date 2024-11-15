@@ -38,11 +38,11 @@ spark = SparkSession.builder.getOrCreate()
 train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs")
 
-X_train = train_set[num_features].values
-y_train = train_set[target].values
+y_train = train_set[config["original_target"]]
+X_train = train_set.drop(columns=config["original_target"])
 
-X_test = test_set[num_features].values
-y_test = test_set[target].values
+y_test = test_set[config["original_target"]]
+X_test = test_set.drop(columns=config["original_target"])
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC
