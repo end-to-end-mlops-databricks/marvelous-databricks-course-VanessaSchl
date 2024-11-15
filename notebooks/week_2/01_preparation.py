@@ -1,8 +1,7 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.0.1-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-1.1.0-py3-none-any.whl
 
 # COMMAND ----------
-import pandas as pd
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
 from pyspark.sql import SparkSession
@@ -10,7 +9,6 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder.getOrCreate()
 
 # COMMAND ----------
-
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # COMMAND ----------
@@ -20,7 +18,6 @@ df = spark.read.csv(
 ).toPandas()
 
 # COMMAND ----------
-data_processor = DataProcessor(pandas_df=df, config=config)
-data_processor.preprocess_data()
-train_set, test_set = data_processor.split_data()
-data_processor.save_to_catalog(train_set=train_set, test_set=test_set, spark=spark)
+data_processor = DataProcessor(config=config, spark=spark)
+train_set, test_set = data_processor.split_data(X=df)
+data_processor.save_to_catalog(train_set=train_set, test_set=test_set)

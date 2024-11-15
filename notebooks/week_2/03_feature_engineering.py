@@ -1,13 +1,11 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-1.0.1-py3-none-any.whl
+# MAGIC %pip install ../housing_price-1.1.0-py3-none-any.whl
 
 # COMMAND ----------
 
 dbutils.library.restartPython()
 
 # COMMAND ----------
-from datetime import datetime
-
 import mlflow
 from databricks import feature_engineering
 from databricks.feature_engineering import FeatureFunction, FeatureLookup
@@ -20,16 +18,17 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 from sklearn.pipeline import Pipeline
 
+# COMMAND ----------
 # Initialize the Databricks session and clients
 spark = SparkSession.builder.getOrCreate()
 workspace = WorkspaceClient()
 fe = feature_engineering.FeatureEngineeringClient()
 
 # COMMAND ----------
-
 mlflow.set_registry_uri("databricks-uc")
 mlflow.set_tracking_uri("databricks")
 
+# COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Extract configuration details
@@ -77,8 +76,10 @@ $$
 """)
 # COMMAND ----------
 # Load training and test sets
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").drop("no_of_weekend_nights", "avg_price_per_room")
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set").toPandas()
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
+    "no_of_weekend_nights", "avg_price_per_room"
+)
+test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
 train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
@@ -126,11 +127,17 @@ pipeline = Pipeline(
 mlflow.set_experiment(experiment_name="/Shared/house-prices-fe")
 GIT_SHA = "ffa63b430205ff7"
 
-with mlflow.start_run(tags={"branch": "week2",
+with mlflow.start_run(tags={"branch": "week1+2",
                             "git_sha": f"{GIT_SHA}"}) as run:
     run_id = run.info.run_id
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
+    y_test = pipeline.named_steps["preprocessor"].preprocess_data(
+        X=y_test,
+        encode_features="original_target",
+        extract_features="target",
+        include_fe_features=False
+    )
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(X_test, y_test)

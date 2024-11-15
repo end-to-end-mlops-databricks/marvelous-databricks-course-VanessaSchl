@@ -1,5 +1,6 @@
 """Data Processor class for the Hotel Reservations project."""
 
+from copy import deepcopy
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
@@ -19,30 +20,43 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         """Fit method for the transformer."""
-        X = self.one_hot_encode(X)
-        X = self.extract_features(X)
+        X = self.one_hot_encode(X=X, features="cat_features")
+        X = self.extract_features(
+            X=X, features="num_features", include_fe_features=True
+        )
+        
+        if y:
+            y = self.one_hot_encode(X=y, features="original_target")
+            y = self.extract_features(
+                X=y, features="target", include_fe_features=False
+            )
+
         return X, y
 
     def transform(self, X):
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
-        X = self.one_hot_encode(X)
-        return self.extract_features(X)
+        X = self.one_hot_encode(X=X, features="cat_features")
+        return self.extract_features(
+            X=X, features="num_features", include_fe_features=True
+        )
 
-    def preprocess_data(self, X):
+    def preprocess_data(self, X, encode_features, extract_features, include_fe_features=True):
         """Preprocess the DataFrame"""
 
         # One-hot-encode categorical features and fix column names
-        X = self.one_hot_encode(X)
+        X = self.one_hot_encode(X=X, features=encode_features)
 
         # Extract target and relevant features
-        X = self.extract_features(X)
+        X = self.extract_features(
+            X=X, features=extract_features, include_fe_features=include_fe_features
+        )
 
         return X
 
-    def one_hot_encode(self, X):
+    def one_hot_encode(self, X, features):
         """One-hot encode the categorical features."""
         # One-hot-encode categorical features and fix column names
-        cat_features = self.config["cat_features"]
+        cat_features = self.config[features]
         X = pd.get_dummies(X, columns=cat_features)
 
         col_names = X.columns.to_list()
@@ -53,12 +67,13 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X
 
-    def extract_features(self, X):
+    def extract_features(self, X, features, include_fe_features=True):
         """Extract the target and relevant features."""
-        target = self.config["target"]
-        num_features = self.config["num_features"]
+        num_features = self.config[features]
 
-        relevant_columns = num_features + self.fe_features + [target]
+        relevant_columns = deepcopy(num_features)
+        if include_fe_features:
+            relevant_columns += self.fe_features
 
         return X[relevant_columns]
 

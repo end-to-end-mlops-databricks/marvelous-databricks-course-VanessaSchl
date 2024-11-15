@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-1.0.1-py3-none-any.whl
+# MAGIC %pip install ../housing_price-1.1.0-py3-none-any.whl
 
 # COMMAND ----------
 
@@ -14,13 +14,13 @@ from sklearn.pipeline import Pipeline
 import mlflow
 from mlflow.models import infer_signature
 
+# COMMAND ----------
 mlflow.set_tracking_uri("databricks")
 mlflow.set_registry_uri(
     "databricks-uc"
 )  # It must be -uc for registering models to Unity Catalog
 
 # COMMAND ----------
-
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Extract configuration details
@@ -33,11 +33,10 @@ schema_name = config["schema_name"]
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()
 
+# COMMAND ----------
 # Load training and testing sets from Databricks tables
-pandas_df = pd.read_csv("/Volumes/dev/datalab_1ai/files/hotel_reservations.csv")
-preprocessor = DataProcessor(config=config, spark=spark)
-train_set, test_set = preprocessor.split_data(pandas_df)
-preprocessor.save_to_catalog(train_set, test_set)
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
+test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs")
 
 X_train = train_set[num_features].values
 y_train = train_set[target].values
@@ -46,8 +45,7 @@ X_test = test_set[num_features].values
 y_test = test_set[target].values
 
 # COMMAND ----------
-
-# Create the pipeline with preprocessing and the LightGBM regressor
+# Create the pipeline with preprocessing and SVC
 pipeline = Pipeline(
     steps=[
         ("preprocessor", DataProcessor(config=config, spark=spark)),
@@ -68,6 +66,12 @@ with mlflow.start_run(
 
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
+    y_test = pipeline.named_steps["preprocessor"].preprocess_data(
+        X=y_test,
+        encode_features="original_target",
+        extract_features="target",
+        include_fe_features=False
+    )
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(X_test, y_test)

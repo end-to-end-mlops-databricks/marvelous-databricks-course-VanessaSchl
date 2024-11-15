@@ -42,6 +42,7 @@ cat_features:
   - type_of_meal_plan
   - room_type_reserved
   - market_segment_type
-  - booking_status
+
+original_target: booking_status
 
 target: booking_status_canceled
