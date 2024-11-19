@@ -130,10 +130,10 @@ test_set["no_of_nights"] = (
 # COMMAND ----------
 # Split features and target
 y_train = train_set[config.original_target]
-X_train = train_set.drop(labels=config.original_target, axis=1)
+X_train = train_set.drop(config.original_target)
 
 y_test = test_set[config.original_target]
-X_test = test_set.drop(labels=config.original_target, axis=1)
+X_test = test_set.drop(config.original_target)
 
 # COMMAND ----------
 # Setup model pipeline
