@@ -24,11 +24,11 @@ mlflow.set_registry_uri(
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Extract configuration details
-num_features = config["num_features"]
-target = config["target"]
-parameters = config["parameters"]
-catalog_name = config["catalog_name"]
-schema_name = config["schema_name"]
+num_features = config.num_features
+target = config.target
+parameters = config.parameters
+catalog_name = config.catalog_name
+schema_name = config.schema_name
 
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()
@@ -38,11 +38,11 @@ spark = SparkSession.builder.getOrCreate()
 train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs")
 
-y_train = train_set[config["original_target"]]
-X_train = train_set.drop(columns=config["original_target"])
+y_train = train_set[config.original_target]
+X_train = train_set.drop(columns=config.original_target)
 
-y_test = test_set[config["original_target"]]
-X_test = test_set.drop(columns=config["original_target"])
+y_test = test_set[config.original_target]
+X_test = test_set.drop(columns=config.original_target)
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC

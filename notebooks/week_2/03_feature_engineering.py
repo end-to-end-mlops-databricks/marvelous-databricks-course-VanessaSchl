@@ -31,11 +31,11 @@ mlflow.set_tracking_uri("databricks")
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Extract configuration details
-num_features = config["num_features"]
-target = config["target"]
-parameters = config["parameters"]
-catalog_name = config["catalog_name"]
-schema_name = config["schema_name"]
+num_features = config.num_features
+target = config.target
+parameters = config.parameters
+catalog_name = config.catalog_name
+schema_name = config.schema_name
 
 # Define table names and function name
 feature_table_name = f"{catalog_name}.{schema_name}.hotel_features"
@@ -109,11 +109,11 @@ training_df = training_set.load_df().toPandas()
 test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
 
 # Split features and target
-y_train = train_set[config["original_target"]]
-X_train = train_set.drop(columns=config["original_target"])
+y_train = train_set[config.original_target]
+X_train = train_set.drop(columns=config.original_target)
 
-y_test = test_set[config["original_target"]]
-X_test = test_set.drop(columns=config["original_target"])
+y_test = test_set[config.original_target]
+X_test = test_set.drop(columns=config.original_target)
 
 # Setup model pipeline
 pipeline = Pipeline(
