@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.1.2-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-1.1.3-py3-none-any.whl
 
 # COMMAND ----------
 from hotel_reservations.config import ProjectConfig
