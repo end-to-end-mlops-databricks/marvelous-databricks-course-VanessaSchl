@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.1.5-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.0.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -35,14 +35,14 @@ spark = SparkSession.builder.getOrCreate()
 
 # COMMAND ----------
 # Load training and testing sets from Databricks tables
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs")
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
+test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
-y_train = train_set[config.original_target]
-X_train = train_set.drop(config.original_target)
+y_train = train_set[[config.original_target]]
+X_train = train_set.drop(columns=config.original_target)
 
-y_test = test_set[config.original_target]
-X_test = test_set.drop(config.original_target)
+y_test = test_set[[config.original_target]]
+X_test = test_set.drop(columns=config.original_target)
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC
@@ -55,7 +55,7 @@ pipeline = Pipeline(
 
 
 # COMMAND ----------
-mlflow.set_experiment(experiment_name="/Shared/hotel-reservations")
+mlflow.set_experiment(experiment_name="/Shared/hotel-reservations-vs")
 GIT_SHA = "ffa63b430205ff7"
 
 # Start an MLflow run to track the training process

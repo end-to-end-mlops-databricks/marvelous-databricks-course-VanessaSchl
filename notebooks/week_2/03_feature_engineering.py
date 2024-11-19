@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.1.5-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.0.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -129,11 +129,11 @@ test_set["no_of_nights"] = (
 
 # COMMAND ----------
 # Split features and target
-y_train = train_set[config.original_target]
-X_train = train_set.drop(config.original_target)
+y_train = training_df[[config.original_target]]
+X_train = training_df.drop(columns=config.original_target)
 
-y_test = test_set[config.original_target]
-X_test = test_set.drop(config.original_target)
+y_test = test_set[[config.original_target]]
+X_test = test_set.drop(columns=config.original_target)
 
 # COMMAND ----------
 # Setup model pipeline
@@ -149,7 +149,7 @@ pipeline = Pipeline(
 
 # COMMAND ----------
 # Set and start MLflow experiment
-mlflow.set_experiment(experiment_name="/Shared/house-prices-fe")
+mlflow.set_experiment(experiment_name="/Shared/hotel-reservations-fe-vs")
 GIT_SHA = "ffa63b430205ff7"
 
 with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as run:

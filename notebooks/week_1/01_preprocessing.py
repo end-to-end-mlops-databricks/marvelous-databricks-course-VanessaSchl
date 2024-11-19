@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.1.5-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.0.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -39,10 +39,10 @@ print("Test set shape:", test_set.shape)
 
 # COMMAND ----------
 # Split data into features and target
-y_train = train_set[config.original_target]
+y_train = train_set[[config.original_target]]
 X_train = train_set.drop(columns=config.original_target)
 
-y_test = test_set[config.original_target]
+y_test = test_set[[config.original_target]]
 X_test = test_set.drop(columns=config.original_target)
 
 # COMMAND ----------

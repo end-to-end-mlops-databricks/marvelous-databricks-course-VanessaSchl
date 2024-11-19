@@ -20,7 +20,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self.spark = spark  # Store the SparkSession
         self.fe_features = fe_features  # Store the feature engineering features
 
-    def fit(self, X, y=None):
+    def fit(
+        self, X: pd.DataFrame, y: pd.DataFrame | None = None
+    ) -> tuple[pd.DataFrame, pd.DataFrame | None]:
         """Fit method for the transformer."""
         X = self.one_hot_encode(X=X, features="cat_features")
         X = self.extract_features(
@@ -33,7 +35,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X, y
 
-    def transform(self, X):
+    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
         X = self.one_hot_encode(X=X, features="cat_features")
         return self.extract_features(
@@ -41,8 +43,12 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         )
 
     def preprocess_data(
-        self, X, encode_features, extract_features, include_fe_features=True
-    ):
+        self,
+        X: pd.DataFrame,
+        encode_features: list[str],
+        extract_features: list[str],
+        include_fe_features: bool = True,
+    ) -> pd.DataFrame:
         """Preprocess the DataFrame"""
 
         # One-hot-encode categorical features and fix column names
@@ -55,7 +61,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X
 
-    def one_hot_encode(self, X, features):
+    def one_hot_encode(self, X: pd.DataFrame, features: str) -> pd.DataFrame:
         """One-hot encode the categorical features."""
         # One-hot-encode categorical features and fix column names
         cat_features = getattr(self.config, features)
@@ -69,7 +75,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X
 
-    def extract_features(self, X, features, include_fe_features=True):
+    def extract_features(
+        self, X: pd.DataFrame, features: str, include_fe_features: bool = True
+    ) -> pd.DataFrame:
         """Extract the target and relevant features."""
         num_features = getattr(self.config, features)
 
@@ -79,14 +87,16 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X[relevant_columns]
 
-    def split_data(self, X, test_size=0.2, random_state=42):
+    def split_data(
+        self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Split the DataFrame (self.df) into training and test sets."""
         train_set, test_set = train_test_split(
             X, test_size=test_size, random_state=random_state
         )
         return train_set, test_set
 
-    def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame):
+    def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame) -> None:
         """Save the train and test sets into Databricks tables."""
 
         train_set_with_timestamp = self.spark.createDataFrame(train_set).withColumn(
