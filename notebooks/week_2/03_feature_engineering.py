@@ -44,35 +44,47 @@ function_name = f"{catalog_name}.{schema_name}.calculate_stay_length"
 
 # COMMAND ----------
 # Create or replace the hotel_features table
-spark.sql(f"""
+spark.sql(
+    f"""
 CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 (Booking_ID STRING NOT NULL,
  no_of_weekend_nights INT,
  avg_price_per_room FLOAT);
-""")
+"""
+)
 
-spark.sql(f"ALTER TABLE {catalog_name}.{schema_name}.house_features "
-          "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);")
+spark.sql(
+    f"ALTER TABLE {catalog_name}.{schema_name}.house_features "
+    "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
+)
 
-spark.sql(f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
-          "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);")
+spark.sql(
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
+    "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+)
 
 # Insert data into the feature table from both train and test sets
-spark.sql(f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-          f"SELECT no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.train_set_vs")
-spark.sql(f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-          f"SELECT no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.test_set_vs")
+spark.sql(
+    f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
+    f"SELECT no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.train_set_vs"
+)
+spark.sql(
+    f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
+    f"SELECT no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.test_set_vs"
+)
 
 # COMMAND ----------
 # Define a function to calculate the overall stay length using the number of week and weekend nights
-spark.sql(f"""
+spark.sql(
+    f"""
 CREATE OR REPLACE FUNCTION {function_name}(no_of_week_nights INT, no_of_weekend_nights INT)
 RETURNS INT
 LANGUAGE PYTHON AS
 $$
 return no_of_week_nights + no_of_weekend_nights
 $$
-""")
+"""
+)
 # COMMAND ----------
 # Load training and test sets
 train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
@@ -81,9 +93,14 @@ train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
-train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
-train_set = train_set.withColumn("no_of_week_nights", train_set["no_of_week_nights"].cast("int"))
+train_set = train_set.withColumn(
+    "no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int")
+)
+train_set = train_set.withColumn(
+    "no_of_week_nights", train_set["no_of_week_nights"].cast("int")
+)
 
+# COMMAND ----------
 # Feature engineering setup
 training_set = fe.create_training_set(
     df=train_set,
@@ -99,36 +116,43 @@ training_set = fe.create_training_set(
             output_name="no_of_nights",
         ),
     ],
-    exclude_columns=["update_timestamp_utc"]
+    exclude_columns=["update_timestamp_utc"],
 )
 
 # Load feature-engineered DataFrame
 training_df = training_set.load_df().toPandas()
 
 # Calculate no_of_nights for training and test set
-test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
+test_set["no_of_nights"] = (
+    test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
+)
 
+# COMMAND ----------
 # Split features and target
 y_train = train_set[config.original_target]
-X_train = train_set.drop(columns=config.original_target)
+X_train = train_set.drop(labels=config.original_target, axis=1)
 
 y_test = test_set[config.original_target]
-X_test = test_set.drop(columns=config.original_target)
+X_test = test_set.drop(labels=config.original_target, axis=1)
 
+# COMMAND ----------
 # Setup model pipeline
 pipeline = Pipeline(
     steps=[
-        ("preprocessor", DataProcessor(config=config, spark=spark, fe_features=["no_of_nights"])),
-        ("classifier", ReservationsModel(config=config))
+        (
+            "preprocessor",
+            DataProcessor(config=config, spark=spark, fe_features=["no_of_nights"]),
+        ),
+        ("classifier", ReservationsModel(config=config)),
     ]
 )
 
+# COMMAND ----------
 # Set and start MLflow experiment
 mlflow.set_experiment(experiment_name="/Shared/house-prices-fe")
 GIT_SHA = "ffa63b430205ff7"
 
-with mlflow.start_run(tags={"branch": "week1+2",
-                            "git_sha": f"{GIT_SHA}"}) as run:
+with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as run:
     run_id = run.info.run_id
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
@@ -136,7 +160,7 @@ with mlflow.start_run(tags={"branch": "week1+2",
         X=y_test,
         encode_features="original_target",
         extract_features="target",
-        include_fe_features=False
+        include_fe_features=False,
     )
 
     # Evaluate the model performance
@@ -161,6 +185,6 @@ with mlflow.start_run(tags={"branch": "week1+2",
         signature=signature,
     )
 mlflow.register_model(
-    model_uri=f'runs:/{run_id}/svc-pipeline-model-fe',
-    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe"
+    model_uri=f"runs:/{run_id}/svc-pipeline-model-fe",
+    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
 )

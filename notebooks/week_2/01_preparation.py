@@ -14,7 +14,9 @@ config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 # COMMAND ----------
 # Load the house prices dataset
 df = spark.read.csv(
-    "/Volumes/dev/datalab_1ai/files/hotel_reservations.csv", header=True, inferSchema=True
+    "/Volumes/dev/datalab_1ai/files/hotel_reservations.csv",
+    header=True,
+    inferSchema=True,
 ).toPandas()
 
 # COMMAND ----------

@@ -13,7 +13,9 @@ from hotel_reservations.config import ProjectConfig
 class DataProcessor(BaseEstimator, TransformerMixin):
     """Class to preprocess and split data for the Hotel Reservations project."""
 
-    def __init__(self, config: ProjectConfig, spark: SparkSession, fe_features: list = []):
+    def __init__(
+        self, config: ProjectConfig, spark: SparkSession, fe_features: list = []
+    ):
         self.config = config  # Store the configuration
         self.spark = spark  # Store the SparkSession
         self.fe_features = fe_features  # Store the feature engineering features
@@ -24,12 +26,10 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         X = self.extract_features(
             X=X, features="num_features", include_fe_features=True
         )
-        
+
         if y:
             y = self.one_hot_encode(X=y, features="original_target")
-            y = self.extract_features(
-                X=y, features="target", include_fe_features=False
-            )
+            y = self.extract_features(X=y, features="target", include_fe_features=False)
 
         return X, y
 
@@ -40,7 +40,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             X=X, features="num_features", include_fe_features=True
         )
 
-    def preprocess_data(self, X, encode_features, extract_features, include_fe_features=True):
+    def preprocess_data(
+        self, X, encode_features, extract_features, include_fe_features=True
+    ):
         """Preprocess the DataFrame"""
 
         # One-hot-encode categorical features and fix column names

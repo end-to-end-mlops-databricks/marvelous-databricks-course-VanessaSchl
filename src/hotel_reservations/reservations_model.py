@@ -8,13 +8,14 @@ from sklearn.preprocessing import StandardScaler
 
 class ReservationsModel(BaseEstimator, ClassifierMixin):
     """Class to train and evaluate a model for predicting cancellation on hotel reservations."""
+
     def __init__(self, config):
         self.config = config
         self.scaler = StandardScaler()
         self.model = XGBClassifier(
-            eta=self.config['parameters']['eta'],
-            n_estimators=self.config['parameters']['n_estimators'],
-            max_depth=self.config['parameters']['max_depth'],
+            eta=self.config["parameters"]["eta"],
+            n_estimators=self.config["parameters"]["n_estimators"],
+            max_depth=self.config["parameters"]["max_depth"],
         )
 
     def fit(self, X, y):

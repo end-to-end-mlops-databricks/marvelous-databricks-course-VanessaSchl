@@ -24,7 +24,9 @@ spark = SparkSession.builder.getOrCreate()
 # COMMAND ----------
 # Initialize DataProcessor
 df = spark.read.csv(
-    "/Volumes/dev/datalab_1ai/files/hotel_reservations.csv", header=True, inferSchema=True
+    "/Volumes/dev/datalab_1ai/files/hotel_reservations.csv",
+    header=True,
+    inferSchema=True,
 ).toPandas()
 data_processor = DataProcessor(config=config, spark=spark)
 
@@ -49,25 +51,25 @@ X_train = data_processor.preprocess_data(
     X=X_train,
     encode_features="cat_features",
     extract_features="num_features",
-    include_fe_features=True
+    include_fe_features=True,
 )
 y_train = data_processor.preprocess_data(
     X=y_train,
     encode_features="original_target",
     extract_features="target",
-    include_fe_features=False
+    include_fe_features=False,
 )
 X_test = data_processor.preprocess_data(
     X=X_test,
     encode_features="cat_features",
     extract_features="num_features",
-    include_fe_features=True
+    include_fe_features=True,
 )
 y_test = data_processor.preprocess_data(
     X=y_test,
     encode_features="original_target",
     extract_features="target",
-    include_fe_features=False
+    include_fe_features=False,
 )
 
 # COMMAND ----------

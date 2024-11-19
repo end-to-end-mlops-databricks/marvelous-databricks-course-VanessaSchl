@@ -13,13 +13,13 @@ def visualize_results(y_test, y_pred):
     sns.heatmap(
         conf_matrix,
         annot=True,
-        fmt='.2f',
+        fmt=".2f",
         vmin=0.0,
         vmax=1.0,
-        xticklabels=['Not Cancelled', 'Cancelled'],
-        yticklabels=['Not Cancelled', 'Cancelled']
+        xticklabels=["Not Cancelled", "Cancelled"],
+        yticklabels=["Not Cancelled", "Cancelled"],
     )
 
-    plt.ylabel('Actual', fontsize=12)
-    plt.xlabel('Prediction', fontsize=12)
+    plt.ylabel("Actual", fontsize=12)
+    plt.xlabel("Prediction", fontsize=12)
     plt.show()

@@ -39,10 +39,10 @@ train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs")
 
 y_train = train_set[config.original_target]
-X_train = train_set.drop(columns=config.original_target)
+X_train = train_set.drop(labels=config.original_target, axis=1)
 
 y_test = test_set[config.original_target]
-X_test = test_set.drop(columns=config.original_target)
+X_test = test_set.drop(labels=config.original_target, axis=1)
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC
@@ -70,7 +70,7 @@ with mlflow.start_run(
         X=y_test,
         encode_features="original_target",
         extract_features="target",
-        include_fe_features=False
+        include_fe_features=False,
     )
 
     # Evaluate the model performance
