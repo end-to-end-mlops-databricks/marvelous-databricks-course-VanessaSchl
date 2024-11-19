@@ -29,7 +29,6 @@ class ReservationsModel(BaseEstimator, ClassifierMixin):
 
     def evaluate(self, X, y):
         """Evaluate the model on the test data."""
-        X = self.scaler.transform(X)
         y_pred = self.predict(X)
         accuracy = accuracy_score(y, y_pred)
         precision = precision_score(y, y_pred)
