@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-1.1.4-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-1.1.5-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -7,13 +7,13 @@ dbutils.library.restartPython()
 # COMMAND ----------
 from pyspark.sql import SparkSession
 import yaml
+from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
 from hotel_reservations.reservations_model import ReservationsModel
 from hotel_reservations.utils import visualize_results
 
 # Load configuration
-with open("../../project_config.yml", "r") as file:
-    config = yaml.safe_load(file)
+config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 print("Configuration loaded:")
 print(yaml.dump(config, default_flow_style=False))

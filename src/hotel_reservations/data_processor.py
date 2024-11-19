@@ -58,7 +58,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
     def one_hot_encode(self, X, features):
         """One-hot encode the categorical features."""
         # One-hot-encode categorical features and fix column names
-        cat_features = self.config[features]
+        cat_features = getattr(self.config, features)
         X = pd.get_dummies(X, columns=cat_features)
 
         col_names = X.columns.to_list()
@@ -71,7 +71,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
     def extract_features(self, X, features, include_fe_features=True):
         """Extract the target and relevant features."""
-        num_features = self.config[features]
+        num_features = getattr(self.config, features)
 
         relevant_columns = deepcopy(num_features)
         if include_fe_features:
