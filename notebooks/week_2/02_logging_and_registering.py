@@ -1,10 +1,10 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-1.1.4-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-1.1.4-py3-none-any.whl
 
 # COMMAND ----------
-
 dbutils.library.restartPython()
 
+# COMMAND ----------
 import pandas as pd
 from pyspark.sql import SparkSession
 from hotel_reservations.config import ProjectConfig
