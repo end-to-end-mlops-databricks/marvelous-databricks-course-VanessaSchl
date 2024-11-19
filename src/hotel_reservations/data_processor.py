@@ -45,8 +45,8 @@ class DataProcessor(BaseEstimator, TransformerMixin):
     def preprocess_data(
         self,
         X: pd.DataFrame,
-        encode_features: list[str],
-        extract_features: list[str],
+        encode_features: str,
+        extract_features: str,
         include_fe_features: bool = True,
     ) -> pd.DataFrame:
         """Preprocess the DataFrame"""
