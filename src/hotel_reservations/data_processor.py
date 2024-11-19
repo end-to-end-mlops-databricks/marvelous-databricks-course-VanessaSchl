@@ -29,7 +29,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             X=X, features="num_features", include_fe_features=True
         )
 
-        if y:
+        if isinstance(y, pd.DataFrame):
             y = self.one_hot_encode(X=y, features="original_target")
             y = self.extract_features(X=y, features="target", include_fe_features=False)
 
