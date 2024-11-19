@@ -2,11 +2,8 @@ catalog_name: dev
 schema_name: datalab_1ai
 
 parameters:
-  C: 1.0
-  kernel: 'rbf'
-  gamma: 'scale'
-  tol: 0.001
-  max_iter: -1
+  eta: 0.3
+  max_depth: 6
 
 num_features:
   - no_of_adults 

@@ -126,7 +126,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jmespath" },
     { name = "python-dateutil" },
-    { name = "urllib3" },
+    { name = "urllib3", marker = "python_full_version == '3.11.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/71/56/5eacd3dcecdbc36cb5695676c165430282f83cb86ffa75a1a65c34c084c5/botocore-1.35.54.tar.gz", hash = "sha256:131bb59ce59c8a939b31e8e647242d70cf11d32d4529fa4dca01feea1e891a76", size = 12920483 }
 wheels = [
@@ -673,6 +673,51 @@ wheels = [
 ]
 
 [[package]]
+name = "hotel-reservations"
+version = "1.1.1"
+source = { virtual = "." }
+dependencies = [
+    { name = "cffi" },
+    { name = "cloudpickle" },
+    { name = "databricks-feature-engineering" },
+    { name = "matplotlib" },
+    { name = "mlflow" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyarrow" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "xgboost" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "databricks-connect" },
+    { name = "databricks-sdk" },
+    { name = "ipykernel" },
+    { name = "pip" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cffi", specifier = ">=1.17.1,<2" },
+    { name = "cloudpickle", specifier = ">=3.0.0,<4" },
+    { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1,<16" },
+    { name = "databricks-feature-engineering", specifier = ">=0.6,<1" },
+    { name = "databricks-sdk", marker = "extra == 'dev'", specifier = ">=0.32.0,<0.33" },
+    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
+    { name = "matplotlib", specifier = ">=3.9.2,<4" },
+    { name = "mlflow", specifier = ">=2.16.0,<3" },
+    { name = "numpy", specifier = ">=1.26.4,<2" },
+    { name = "pandas", specifier = ">=2.2.2,<3" },
+    { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
+    { name = "pyarrow", specifier = ">=15.0.2,<16" },
+    { name = "scikit-learn", specifier = ">=1.5.1,<2" },
+    { name = "scipy", specifier = ">=1.14.1,<2" },
+    { name = "xgboost", specifier = ">=2.1.2,<3" },
+]
+
+[[package]]
 name = "idna"
 version = "3.10"
 source = { registry = "https://pypi.org/simple" }
@@ -731,7 +776,7 @@ dependencies = [
     { name = "pygments" },
     { name = "stack-data" },
     { name = "traitlets" },
-    { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "python_full_version == '3.11.*'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/85/e0/a3f36dde97e12121106807d80485423ae4c5b27ce60d40d4ab0bab18a9db/ipython-8.29.0.tar.gz", hash = "sha256:40b60e15b22591450eef73e40a027cf77bd652e757523eebc5bd7c7c498290eb", size = 5497513 }
 wheels = [
@@ -850,23 +895,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d2/d4/71828f32b956612dc36efd7be1788980cb1e66bfb3706e6dec9acad9b4f9/kiwisolver-1.4.7-cp311-cp311-win32.whl", hash = "sha256:4c00336b9dd5ad96d0a558fd18a8b6f711b7449acce4c157e7343ba92dd0cf3d", size = 46645 },
     { url = "https://files.pythonhosted.org/packages/a1/65/d43e9a20aabcf2e798ad1aff6c143ae3a42cf506754bcb6a7ed8259c8425/kiwisolver-1.4.7-cp311-cp311-win_amd64.whl", hash = "sha256:929e294c1ac1e9f615c62a4e4313ca1823ba37326c164ec720a803287c4c499b", size = 56022 },
     { url = "https://files.pythonhosted.org/packages/35/b3/9f75a2e06f1b4ca00b2b192bc2b739334127d27f1d0625627ff8479302ba/kiwisolver-1.4.7-cp311-cp311-win_arm64.whl", hash = "sha256:e33e8fbd440c917106b237ef1a2f1449dfbb9b6f6e1ce17c94cd6a1e0d438376", size = 48536 },
-]
-
-[[package]]
-name = "lightgbm"
-version = "4.5.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "numpy" },
-    { name = "scipy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/e6/41be1f8642257e21b4170e798c9a84e4268656ebfa3019586d82bfd281c9/lightgbm-4.5.0.tar.gz", hash = "sha256:e1cd7baf0318d4e308a26575a63a4635f08df866ad3622a9d8e3d71d9637a1ba", size = 1701072 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/d2/46520b6e255298e920df26ff6e5e4fc788c927886e1e30a96b27c2f94924/lightgbm-4.5.0-py3-none-macosx_10_15_x86_64.whl", hash = "sha256:2212e2166af6379bc005e6f7041dd2dcba3750238eccbc55d09d3c0717c51187", size = 1923168 },
-    { url = "https://files.pythonhosted.org/packages/11/3f/49913ed111286e23bcc40daab54542d80924264dca8ae371514039ab83ab/lightgbm-4.5.0-py3-none-macosx_12_0_arm64.whl", hash = "sha256:1301aa853e1fe4bf318539aa132f373862b04aa537af502508711ce03dffff09", size = 1575672 },
-    { url = "https://files.pythonhosted.org/packages/84/6a/10c4921526600559530d49d70553d1bc1bd84c616808c629a620a6160305/lightgbm-4.5.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:7f0a3dded769d83560845f2c3fe1966630ec1ca527c380d9d48d9b35579a796e", size = 3425739 },
-    { url = "https://files.pythonhosted.org/packages/4e/19/1b928cad70a4e1a3e2c37d5417ca2182510f2451eaadb6c91cd9ec692cae/lightgbm-4.5.0-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:960a0e7c077de0ca3053f1325d3edfc92ea815acf5176adcacdea0f635aeef9b", size = 3552481 },
-    { url = "https://files.pythonhosted.org/packages/d9/28/3be76b591a2e14a031b681b8283acf1dec2ad521f6f1701b7957df68c466/lightgbm-4.5.0-py3-none-win_amd64.whl", hash = "sha256:7ccb73ee9fb74fbbf89ad24c57a6edad505aa8f2165d02b999a082dbbbb0ee57", size = 1444319 },
 ]
 
 [[package]]
@@ -1005,51 +1033,6 @@ databricks = [
 ]
 
 [[package]]
-name = "mlops-with-databricks"
-version = "0.0.1"
-source = { virtual = "." }
-dependencies = [
-    { name = "cffi" },
-    { name = "cloudpickle" },
-    { name = "databricks-feature-engineering" },
-    { name = "lightgbm" },
-    { name = "matplotlib" },
-    { name = "mlflow" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "pyarrow" },
-    { name = "scikit-learn" },
-    { name = "scipy" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "databricks-connect" },
-    { name = "databricks-sdk" },
-    { name = "ipykernel" },
-    { name = "pip" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "cffi", specifier = ">=1.17.1,<2" },
-    { name = "cloudpickle", specifier = ">=3.0.0,<4" },
-    { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1,<16" },
-    { name = "databricks-feature-engineering", specifier = ">=0.6,<1" },
-    { name = "databricks-sdk", marker = "extra == 'dev'", specifier = ">=0.32.0,<0.33" },
-    { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
-    { name = "lightgbm", specifier = ">=4.5.0,<5" },
-    { name = "matplotlib", specifier = ">=3.9.2,<4" },
-    { name = "mlflow", specifier = ">=2.16.0,<3" },
-    { name = "numpy", specifier = ">=1.26.4,<2" },
-    { name = "pandas", specifier = ">=2.2.2,<3" },
-    { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
-    { name = "pyarrow", specifier = ">=15.0.2,<16" },
-    { name = "scikit-learn", specifier = ">=1.5.1,<2" },
-    { name = "scipy", specifier = ">=1.14.1,<2" },
-]
-
-[[package]]
 name = "nest-asyncio"
 version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1072,6 +1055,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/df/a0/4e0f14d847cfc2a633a1c8621d00724f3206cfeddeb66d35698c4e2cf3d2/numpy-1.26.4-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:60dedbb91afcbfdc9bc0b1f3f402804070deed7392c23eb7a7f07fa857868e8a", size = 18093567 },
     { url = "https://files.pythonhosted.org/packages/d2/b7/a734c733286e10a7f1a8ad1ae8c90f2d33bf604a96548e0a4a3a6739b468/numpy-1.26.4-cp311-cp311-win32.whl", hash = "sha256:1af303d6b2210eb850fcf03064d364652b7120803a0b872f5211f5234b399f20", size = 5968812 },
     { url = "https://files.pythonhosted.org/packages/3f/6b/5610004206cf7f8e7ad91c5a85a8c71b2f2f8051a0c0c4d5916b76d6cbb2/numpy-1.26.4-cp311-cp311-win_amd64.whl", hash = "sha256:cd25bcecc4974d09257ffcd1f098ee778f7834c3ad767fe5db785be9a4aa9cb2", size = 15811913 },
+]
+
+[[package]]
+name = "nvidia-nccl-cu12"
+version = "2.23.4"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/3a/0112397396dec37ffc8edd7836d48261b4d14ca60ec8ed7bc857cce1d916/nvidia_nccl_cu12-2.23.4-py3-none-manylinux2014_aarch64.whl", hash = "sha256:aa946c8327e22ced28e7cef508a334673abc42064ec85f02d005ba1785ea4cec", size = 198953892 },
+    { url = "https://files.pythonhosted.org/packages/ed/1f/6482380ec8dcec4894e7503490fc536d846b0d59694acad9cf99f27d0e7d/nvidia_nccl_cu12-2.23.4-py3-none-manylinux2014_x86_64.whl", hash = "sha256:b097258d9aab2fa9f686e33c6fe40ae57b27df60cedbd15d139701bb5509e0c1", size = 198954603 },
 ]
 
 [[package]]
@@ -1125,7 +1117,7 @@ name = "pandas"
 version = "2.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
+    { name = "numpy", marker = "python_full_version == '3.11.*'" },
     { name = "python-dateutil" },
     { name = "pytz" },
     { name = "tzdata" },
@@ -1525,7 +1517,7 @@ name = "sqlalchemy"
 version = "2.0.36"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "greenlet", marker = "platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64'" },
+    { name = "greenlet", marker = "(platform_machine == 'AMD64' and python_full_version == '3.11.*') or (platform_machine == 'WIN32' and python_full_version == '3.11.*') or (platform_machine == 'aarch64' and python_full_version == '3.11.*') or (platform_machine == 'amd64' and python_full_version == '3.11.*') or (platform_machine == 'ppc64le' and python_full_version == '3.11.*') or (platform_machine == 'win32' and python_full_version == '3.11.*') or (platform_machine == 'x86_64' and python_full_version == '3.11.*')" },
     { name = "typing-extensions" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/65/9cbc9c4c3287bed2499e05033e207473504dc4df999ce49385fb1f8b058a/sqlalchemy-2.0.36.tar.gz", hash = "sha256:7f2767680b6d2398aea7082e45a774b2b0767b5c8d8ffb9c8b683088ea9b29c5", size = 9574485 }
@@ -1674,6 +1666,26 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e5/a7/47b7ff74fbadf81b696872d5ba504966591a3468f1bc86bca2f407baef68/wrapt-1.16.0-cp311-cp311-win32.whl", hash = "sha256:66027d667efe95cc4fa945af59f92c5a02c6f5bb6012bff9e60542c74c75c362", size = 35327 },
     { url = "https://files.pythonhosted.org/packages/cf/c3/0084351951d9579ae83a3d9e38c140371e4c6b038136909235079f2e6e78/wrapt-1.16.0-cp311-cp311-win_amd64.whl", hash = "sha256:aefbc4cb0a54f91af643660a0a150ce2c090d3652cf4052a5397fb2de549cd89", size = 37523 },
     { url = "https://files.pythonhosted.org/packages/ff/21/abdedb4cdf6ff41ebf01a74087740a709e2edb146490e4d9beea054b0b7a/wrapt-1.16.0-py3-none-any.whl", hash = "sha256:6906c4100a8fcbf2fa735f6059214bb13b97f75b1a61777fcf6432121ef12ef1", size = 23362 },
+]
+
+[[package]]
+name = "xgboost"
+version = "2.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "nvidia-nccl-cu12", marker = "platform_machine != 'aarch64' and platform_system == 'Linux'" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d2/d5/8d93a950a379b34767ac118cf5653977048e291c6695713a60863532ec08/xgboost-2.1.2.tar.gz", hash = "sha256:151071c22d0f5637739ccaf057f57d05983caaba557cc3d8191c2cb8ce8ae659", size = 1090159 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ab/a2/876d56ae72d7472b7a4228b880f1aaaa9c01817e05b4943674c9384ff20a/xgboost-2.1.2-py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.macosx_12_0_x86_64.whl", hash = "sha256:9efbdb262cce5e6d71123748ee8c0c4e6cf66d9c9207dae71f645116717c1f00", size = 2139655 },
+    { url = "https://files.pythonhosted.org/packages/0e/57/900d6efd517aea09de07a22f26ec3bb757f744b96d098a24aa383d47cfb9/xgboost-2.1.2-py3-none-macosx_12_0_arm64.whl", hash = "sha256:ec49df8017e729244e08ffb4904659f3f0b6f3c8ca11c90a5ca501ab9cc8c8ce", size = 1938347 },
+    { url = "https://files.pythonhosted.org/packages/d9/83/a50c7b8757b76377dc60dcd6e52b29e1d9798a7b0587205f82f80f5caa65/xgboost-2.1.2-py3-none-manylinux2014_aarch64.whl", hash = "sha256:bfa7e6cecf7b62319379f0d4b04b966e84a933adcde0405061b9ddb0d0aef6b1", size = 4439844 },
+    { url = "https://files.pythonhosted.org/packages/49/12/fe41b85d9f1a363226f58d6a6f5c43031f64063a6e2f6e02162f84d96b76/xgboost-2.1.2-py3-none-manylinux2014_x86_64.whl", hash = "sha256:30a23db30a7c958917fce9f0467eab8920480d064a4bb74de693e0680528163f", size = 4529986 },
+    { url = "https://files.pythonhosted.org/packages/a8/5d/0b526537ab07334cd0832f036cdaa5a82371f75cc26e9001c51b315f7519/xgboost-2.1.2-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:69f1e1038e594d28d6f74252685495eba9de4983e95c87d1e93706fa5f720b02", size = 4201081 },
+    { url = "https://files.pythonhosted.org/packages/95/a4/16490d38b4854a1ce4995f4088bcb701b5057f711e34c95cd6e29792cdde/xgboost-2.1.2-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:a8abdcc48d68cad22812df43a16cfc8314dcf771064b63ada9d73399129c8fdc", size = 153893083 },
+    { url = "https://files.pythonhosted.org/packages/fe/df/e3a1f3f008db8d2b199ded2168014c7784b8027714b74d802c892815fd72/xgboost-2.1.2-py3-none-win_amd64.whl", hash = "sha256:93782c35e8a2c2eb124eb68186c3238f270ee868c654f65b47f0d594376b25d6", size = 124909526 },
 ]
 
 [[package]]

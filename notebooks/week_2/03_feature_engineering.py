@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../housing_price-1.1.0-py3-none-any.whl
+# MAGIC %pip install ../housing_price-1.1.1-py3-none-any.whl
 
 # COMMAND ----------
 
