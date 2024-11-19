@@ -65,6 +65,8 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         """One-hot encode the categorical features."""
         # One-hot-encode categorical features and fix column names
         cat_features = getattr(self.config, features)
+        if not isinstance(cat_features, list):
+            cat_features = [cat_features]
         X = pd.get_dummies(X, columns=cat_features)
 
         col_names = X.columns.to_list()
