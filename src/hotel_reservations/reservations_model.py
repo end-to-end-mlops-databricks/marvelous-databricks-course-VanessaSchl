@@ -13,6 +13,7 @@ class ReservationsModel(BaseEstimator, ClassifierMixin):
         self.scaler = StandardScaler()
         self.model = XGBClassifier(
             eta=self.config['parameters']['eta'],
+            n_estimators=self.config['parameters']['n_estimators'],
             max_depth=self.config['parameters']['max_depth'],
         )
 
