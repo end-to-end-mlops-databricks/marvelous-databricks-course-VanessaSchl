@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -48,7 +48,7 @@ X_test = test_set.drop(columns=config.original_target)
 # Create the pipeline with preprocessing and SVC
 pipeline = Pipeline(
     steps=[
-        ("preprocessor", DataProcessor(config=config, spark=spark)),
+        ("preprocessor", DataProcessor(config=config)),
         ("classifier", ReservationsModel(config=config)),
     ]
 )

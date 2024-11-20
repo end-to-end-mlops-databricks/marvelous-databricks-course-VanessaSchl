@@ -14,10 +14,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
     """Class to preprocess and split data for the Hotel Reservations project."""
 
     def __init__(
-        self, config: ProjectConfig, spark: SparkSession, fe_features: list = []
+        self, config: ProjectConfig, fe_features: list = []
     ):
         self.config = config  # Store the configuration
-        self.spark = spark  # Store the SparkSession
         self.fe_features = fe_features  # Store the feature engineering features
 
     def fit(
@@ -89,14 +88,14 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         )
         return train_set, test_set
 
-    def save_to_catalog(self, train_set: pd.DataFrame, test_set: pd.DataFrame) -> None:
+    def save_to_catalog(self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame) -> None:
         """Save the train and test sets into Databricks tables."""
 
-        train_set_with_timestamp = self.spark.createDataFrame(train_set).withColumn(
+        train_set_with_timestamp = spark.createDataFrame(train_set).withColumn(
             "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
         )
 
-        test_set_with_timestamp = self.spark.createDataFrame(test_set).withColumn(
+        test_set_with_timestamp = spark.createDataFrame(test_set).withColumn(
             "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
         )
 
@@ -108,12 +107,12 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             f"{self.config.catalog_name}.{self.config.schema_name}.test_set_vs"
         )
 
-        self.spark.sql(
+        spark.sql(
             f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.train_set_vs "
             "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
         )
 
-        self.spark.sql(
+        spark.sql(
             f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.test_set_vs "
             "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
         )

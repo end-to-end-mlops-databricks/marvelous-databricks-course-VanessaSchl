@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -24,6 +24,6 @@ df = spark.read.csv(
 ).toPandas()
 
 # COMMAND ----------
-data_processor = DataProcessor(config=config, spark=spark)
+data_processor = DataProcessor(config=config)
 train_set, test_set = data_processor.split_data(X=df)
-data_processor.save_to_catalog(train_set=train_set, test_set=test_set)
+data_processor.save_to_catalog(train_set=train_set, test_set=test_set, spark=spark)

@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -141,7 +141,7 @@ pipeline = Pipeline(
     steps=[
         (
             "preprocessor",
-            DataProcessor(config=config, spark=spark, fe_features=["no_of_nights"]),
+            DataProcessor(config=config, fe_features=["no_of_nights"]),
         ),
         ("classifier", ReservationsModel(config=config)),
     ]

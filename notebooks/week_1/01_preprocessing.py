@@ -1,11 +1,10 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
 
 # COMMAND ----------
-from pyspark.sql import SparkSession
 import yaml
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
@@ -19,16 +18,13 @@ print("Configuration loaded:")
 print(yaml.dump(config, default_flow_style=False))
 
 # COMMAND ----------
-spark = SparkSession.builder.getOrCreate()
-
-# COMMAND ----------
 # Initialize DataProcessor
 df = spark.read.csv(
     "/Volumes/dev/datalab_1ai/files/hotel_reservations.csv",
     header=True,
     inferSchema=True,
 ).toPandas()
-data_processor = DataProcessor(config=config, spark=spark)
+data_processor = DataProcessor(config=config)
 
 # COMMAND ----------
 # Split the data
