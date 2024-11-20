@@ -32,9 +32,8 @@ class ReservationsModel(BaseEstimator, ClassifierMixin):
         X = self.scaler.transform(X)
         return self.model.predict(X)
 
-    def evaluate(self, X: pd.DataFrame, y: pd.DataFrame):
+    def evaluate(self, y: pd.DataFrame, y_pred: pd.DataFrame):
         """Evaluate the model on the test data."""
-        y_pred = self.predict(X)
-        accuracy = accuracy_score(y, y_pred)
-        precision = precision_score(y, y_pred)
+        accuracy = accuracy_score(y_true=y, y_pred=y_pred)
+        precision = precision_score(y_true=y, y_pred=y_pred)
         return accuracy, precision

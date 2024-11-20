@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.0.4-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -80,7 +80,7 @@ with mlflow.start_run(
     )
 
     # Evaluate the model performance
-    accuracy, precision = pipeline.named_steps["classifier"].evaluate(X_test, y_test)
+    accuracy, precision = pipeline.named_steps["classifier"].evaluate(y_test, y_pred)
 
     print(f"Accuracy: {accuracy}")
     print(f"Precision: {precision}")

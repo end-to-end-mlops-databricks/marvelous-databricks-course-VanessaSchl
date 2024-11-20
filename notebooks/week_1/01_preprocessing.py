@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.0.4-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.1.0-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -79,7 +79,8 @@ model.fit(X=X_train, y=y_train)
 
 # COMMAND ----------
 # Evaluate the model
-accuracy, precision = model.evaluate(X=X_test, y=y_test)
+y_pred = model.predict(X=X_test)
+accuracy, precision = model.evaluate(y=y_test, y_pred=y_pred)
 print(f"Accuracy: {round(accuracy, ndigits=4)}")
 print(f"Precision: {round(precision, ndigits=4)}")
 
