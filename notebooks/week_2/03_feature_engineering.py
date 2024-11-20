@@ -31,6 +31,7 @@ config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Extract configuration details
 num_features = config.num_features
+original_target = config.original_target
 target = config.target
 parameters = config.parameters
 catalog_name = config.catalog_name
@@ -103,7 +104,7 @@ train_set = train_set.withColumn(
 # Feature engineering setup
 training_set = fe.create_training_set(
     df=train_set,
-    label=target,
+    label=original_target,
     feature_lookups=[
         FeatureLookup(
             table_name=feature_table_name,
