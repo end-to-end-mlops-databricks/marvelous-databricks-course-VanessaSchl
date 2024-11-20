@@ -14,7 +14,6 @@ from hotel_reservations.data_processor import DataProcessor
 from hotel_reservations.reservations_model import ReservationsModel
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as F
 from sklearn.pipeline import Pipeline
 
 # COMMAND ----------
@@ -54,7 +53,7 @@ CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.house_features "
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
     "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
 )
 
