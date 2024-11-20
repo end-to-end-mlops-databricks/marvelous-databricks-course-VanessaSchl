@@ -194,7 +194,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
         training_set=training_set,
         signature=signature,
     )
-mlflow.register_model(
-    model_uri=f"runs:/{run_id}/svc-pipeline-model-fe",
-    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
-)
+    mlflow.register_model(
+        model_uri=f"runs:/{run_id}/svc-pipeline-model-fe",
+        name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
+    )
