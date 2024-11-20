@@ -47,7 +47,7 @@ spark.sql(
     f"""
 CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 (Booking_ID STRING NOT NULL,
- no_of_weekend_nights INT,
+ no_of_previous_cancellations INT,
  avg_price_per_room FLOAT);
 """
 )
@@ -65,11 +65,11 @@ spark.sql(
 # Insert data into the feature table from both train and test sets
 spark.sql(
     f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-    f"SELECT Booking_ID, no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.train_set_vs"
+    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {catalog_name}.{schema_name}.train_set_vs"
 )
 spark.sql(
     f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-    f"SELECT Booking_ID, no_of_weekend_nights, avg_price_per_room FROM {catalog_name}.{schema_name}.test_set_vs"
+    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {catalog_name}.{schema_name}.test_set_vs"
 )
 
 # COMMAND ----------
@@ -87,7 +87,7 @@ $$
 # COMMAND ----------
 # Load training and test sets
 train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
-    "no_of_weekend_nights", "avg_price_per_room"
+    "no_of_previous_cancellations", "avg_price_per_room"
 )
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
@@ -107,7 +107,7 @@ training_set = fe.create_training_set(
     feature_lookups=[
         FeatureLookup(
             table_name=feature_table_name,
-            feature_names=["no_of_weekend_nights", "avg_price_per_room"],
+            feature_names=["no_of_previous_cancellations", "avg_price_per_room"],
             lookup_key="Booking_ID",
         ),
         FeatureFunction(
