@@ -22,18 +22,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
     def fit(
         self, X: pd.DataFrame, y: pd.DataFrame | None = None
-    ) -> tuple[pd.DataFrame, pd.DataFrame | None]:
+    ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
-        X = self.one_hot_encode(X=X, features="cat_features")
-        X = self.extract_features(
-            X=X, features="num_features", include_fe_features=True
-        )
-
-        if isinstance(y, pd.DataFrame):
-            y = self.one_hot_encode(X=y, features="original_target")
-            y = self.extract_features(X=y, features="target", include_fe_features=False)
-
-        return X, y
+        return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""

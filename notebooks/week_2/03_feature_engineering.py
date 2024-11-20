@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.0.3-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.0.4-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -154,6 +154,12 @@ GIT_SHA = "ffa63b430205ff7"
 
 with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as run:
     run_id = run.info.run_id
+    y_train = pipeline.named_steps["preprocessor"].preprocess_data(
+        X=y_train,
+        encode_features="original_target",
+        extract_features="target",
+        include_fe_features=False,
+    )
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
     y_test = pipeline.named_steps["preprocessor"].preprocess_data(
