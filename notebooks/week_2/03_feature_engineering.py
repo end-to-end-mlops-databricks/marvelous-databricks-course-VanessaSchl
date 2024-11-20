@@ -114,6 +114,10 @@ training_set = fe.create_training_set(
         FeatureFunction(
             udf_name=function_name,
             output_name="no_of_nights",
+            input_bindings={
+                "no_of_week_nights": "no_of_week_nights",
+                "no_of_weekend_nights": "no_of_weekend_nights",
+            },
         ),
     ],
     exclude_columns=["update_timestamp_utc"],

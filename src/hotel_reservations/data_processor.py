@@ -13,9 +13,7 @@ from hotel_reservations.config import ProjectConfig
 class DataProcessor(BaseEstimator, TransformerMixin):
     """Class to preprocess and split data for the Hotel Reservations project."""
 
-    def __init__(
-        self, config: ProjectConfig, fe_features: list = []
-    ):
+    def __init__(self, config: ProjectConfig, fe_features: list = []):
         self.config = config  # Store the configuration
         self.fe_features = fe_features  # Store the feature engineering features
 
@@ -88,7 +86,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         )
         return train_set, test_set
 
-    def save_to_catalog(self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame) -> None:
+    def save_to_catalog(
+        self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame
+    ) -> None:
         """Save the train and test sets into Databricks tables."""
 
         train_set_with_timestamp = spark.createDataFrame(train_set).withColumn(
