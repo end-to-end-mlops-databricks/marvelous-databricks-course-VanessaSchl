@@ -193,12 +193,12 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
         artifact_path="svc-pipeline-model-fe",
         training_set=training_set,
     )
-    
+
     model_uri = f"runs:/{run_id}/svc-pipeline-model-fe"
     # set the signature for the logged model
     set_signature(model_uri, signature)
-    
-    
+
+
 mlflow.register_model(
     model_uri=model_uri,
     name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
