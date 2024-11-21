@@ -9,12 +9,13 @@ import mlflow
 from databricks import feature_engineering
 from databricks.feature_engineering import FeatureFunction, FeatureLookup
 from databricks.sdk import WorkspaceClient
-from hotel_reservations.config import ProjectConfig
-from hotel_reservations.data_processor import DataProcessor
-from hotel_reservations.reservations_model import ReservationsModel
 from mlflow.models import infer_signature, set_signature
 from pyspark.sql import SparkSession
 from sklearn.pipeline import Pipeline
+
+from hotel_reservations.config import ProjectConfig
+from hotel_reservations.data_processor import DataProcessor
+from hotel_reservations.reservations_model import ReservationsModel
 
 # COMMAND ----------
 # Initialize the Databricks session and clients
@@ -54,13 +55,11 @@ CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
-    "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
-    "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
 )
 
 # Insert data into the feature table from both train and test sets
@@ -93,12 +92,8 @@ train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
-train_set = train_set.withColumn(
-    "no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int")
-)
-train_set = train_set.withColumn(
-    "no_of_week_nights", train_set["no_of_week_nights"].cast("int")
-)
+train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
+train_set = train_set.withColumn("no_of_week_nights", train_set["no_of_week_nights"].cast("int"))
 
 # COMMAND ----------
 # Feature engineering setup
@@ -127,9 +122,7 @@ training_set = fe.create_training_set(
 training_df = training_set.load_df().toPandas()
 
 # Calculate no_of_nights for training and test set
-test_set["no_of_nights"] = (
-    test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
-)
+test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
 
 # COMMAND ----------
 # Split features and target

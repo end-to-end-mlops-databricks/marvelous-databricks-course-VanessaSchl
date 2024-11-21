@@ -5,20 +5,18 @@
 dbutils.library.restartPython()
 
 # COMMAND ----------
-import pandas as pd
+import mlflow
+from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
+from sklearn.pipeline import Pipeline
+
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
 from hotel_reservations.reservations_model import ReservationsModel
-from sklearn.pipeline import Pipeline
-import mlflow
-from mlflow.models import infer_signature
 
 # COMMAND ----------
 mlflow.set_tracking_uri("databricks")
-mlflow.set_registry_uri(
-    "databricks-uc"
-)  # It must be -uc for registering models to Unity Catalog
+mlflow.set_registry_uri("databricks-uc")  # It must be -uc for registering models to Unity Catalog
 
 # COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
@@ -100,9 +98,7 @@ with mlflow.start_run(
     )
     mlflow.log_input(dataset, context="training")
 
-    mlflow.sklearn.log_model(
-        sk_model=pipeline, artifact_path="vs-svc-pipeline-model", signature=signature
-    )
+    mlflow.sklearn.log_model(sk_model=pipeline, artifact_path="vs-svc-pipeline-model", signature=signature)
 
 
 # COMMAND ----------

@@ -1,8 +1,8 @@
 """Utility functions for the hotel reservations project."""
 
-from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
 
 def visualize_results(y_test, y_pred):

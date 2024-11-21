@@ -34,6 +34,8 @@ select = [
 ]
 ignore = [
     "E501",  # line-too-long
+    "F821",  # undefined-name
+    "E402",  # module-level-import-not-at-top
 ]
 
 [tool.ruff.format]

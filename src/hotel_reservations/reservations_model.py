@@ -1,10 +1,10 @@
 """Model for predicting hotel cancellations."""
 
 import pandas as pd
-from xgboost import XGBClassifier
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, precision_score
 from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier
 
 from hotel_reservations.config import ProjectConfig
 

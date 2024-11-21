@@ -5,9 +5,10 @@
 dbutils.library.restartPython()
 
 # COMMAND ----------
+from pyspark.sql import SparkSession
+
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
-from pyspark.sql import SparkSession
 
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()

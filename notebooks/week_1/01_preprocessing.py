@@ -6,6 +6,7 @@ dbutils.library.restartPython()
 
 # COMMAND ----------
 import yaml
+
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
 from hotel_reservations.reservations_model import ReservationsModel
