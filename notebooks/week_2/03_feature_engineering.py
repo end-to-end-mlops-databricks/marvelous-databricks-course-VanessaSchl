@@ -12,7 +12,7 @@ from databricks.sdk import WorkspaceClient
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
 from hotel_reservations.reservations_model import ReservationsModel
-from mlflow.models import infer_signature
+from mlflow.models import infer_signature, set_signature
 from pyspark.sql import SparkSession
 from sklearn.pipeline import Pipeline
 
@@ -192,9 +192,14 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
         flavor=mlflow.sklearn,
         artifact_path="svc-pipeline-model-fe",
         training_set=training_set,
-        signature=signature,
     )
-    mlflow.register_model(
-        model_uri=f"runs:/{run_id}/svc-pipeline-model-fe",
-        name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
-    )
+    
+    model_uri = f"runs:/{run_id}/svc-pipeline-model-fe"
+    # set the signature for the logged model
+    set_signature(model_uri, signature)
+    
+    
+mlflow.register_model(
+    model_uri=model_uri,
+    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
+)
