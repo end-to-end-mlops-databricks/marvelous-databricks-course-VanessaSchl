@@ -680,6 +680,7 @@ dependencies = [
     { name = "cffi" },
     { name = "cloudpickle" },
     { name = "databricks-feature-engineering" },
+    { name = "databricks-sdk" },
     { name = "matplotlib" },
     { name = "mlflow" },
     { name = "numpy" },
@@ -694,7 +695,6 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "databricks-connect" },
-    { name = "databricks-sdk" },
     { name = "ipykernel" },
     { name = "pip" },
 ]
@@ -705,7 +705,7 @@ requires-dist = [
     { name = "cloudpickle", specifier = ">=3.0.0,<4" },
     { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1,<16" },
     { name = "databricks-feature-engineering", specifier = ">=0.6,<1" },
-    { name = "databricks-sdk", marker = "extra == 'dev'", specifier = ">=0.32.0,<0.33" },
+    { name = "databricks-sdk", specifier = ">=0.32.0,<0.33" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
     { name = "matplotlib", specifier = ">=3.9.2,<4" },
     { name = "mlflow", specifier = ">=2.16.0,<3" },
