@@ -20,14 +20,18 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self.config = config  # Store the configuration
         self.fe_features = fe_features  # Store the feature engineering features
 
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame | None = None) -> BaseEstimator | TransformerMixin:
+    def fit(
+        self, X: pd.DataFrame, y: pd.DataFrame | None = None
+    ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
         X = self.one_hot_encode(X=X, features="cat_features")
-        return self.extract_features(X=X, features="num_features", include_fe_features=True)
+        return self.extract_features(
+            X=X, features="num_features", include_fe_features=True
+        )
 
     def preprocess_data(
         self,
@@ -42,7 +46,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         X = self.one_hot_encode(X=X, features=encode_features)
 
         # Extract target and relevant features
-        X = self.extract_features(X=X, features=extract_features, include_fe_features=include_fe_features)
+        X = self.extract_features(
+            X=X, features=extract_features, include_fe_features=include_fe_features
+        )
 
         return X
 
@@ -62,7 +68,9 @@ class DataProcessor(BaseEstimator, TransformerMixin):
 
         return X
 
-    def extract_features(self, X: pd.DataFrame, features: str, include_fe_features: bool = True) -> pd.DataFrame:
+    def extract_features(
+        self, X: pd.DataFrame, features: str, include_fe_features: bool = True
+    ) -> pd.DataFrame:
         """Extract the target and relevant features."""
         num_features = getattr(self.config, features)
 
@@ -76,10 +84,14 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Split the DataFrame (self.df) into training and test sets."""
-        train_set, test_set = train_test_split(X, test_size=test_size, random_state=random_state)
+        train_set, test_set = train_test_split(
+            X, test_size=test_size, random_state=random_state
+        )
         return train_set, test_set
 
-    def save_to_catalog(self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame) -> None:
+    def save_to_catalog(
+        self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame
+    ) -> None:
         """Save the train and test sets into Databricks tables."""
 
         train_set_with_timestamp = spark.createDataFrame(train_set).withColumn(

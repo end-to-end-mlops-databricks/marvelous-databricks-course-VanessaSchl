@@ -16,7 +16,9 @@ from hotel_reservations.reservations_model import ReservationsModel
 
 # COMMAND ----------
 mlflow.set_tracking_uri("databricks")
-mlflow.set_registry_uri("databricks-uc")  # It must be -uc for registering models to Unity Catalog
+mlflow.set_registry_uri(
+    "databricks-uc"
+)  # It must be -uc for registering models to Unity Catalog
 
 # COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
@@ -98,7 +100,9 @@ with mlflow.start_run(
     )
     mlflow.log_input(dataset, context="training")
 
-    mlflow.sklearn.log_model(sk_model=pipeline, artifact_path="vs-svc-pipeline-model", signature=signature)
+    mlflow.sklearn.log_model(
+        sk_model=pipeline, artifact_path="vs-svc-pipeline-model", signature=signature
+    )
 
 
 # COMMAND ----------

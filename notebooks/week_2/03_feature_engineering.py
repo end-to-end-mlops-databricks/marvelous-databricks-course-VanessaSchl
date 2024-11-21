@@ -55,11 +55,13 @@ CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
+    "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features "
+    "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
 )
 
 # Insert data into the feature table from both train and test sets
@@ -92,8 +94,12 @@ train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
 test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
-train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
-train_set = train_set.withColumn("no_of_week_nights", train_set["no_of_week_nights"].cast("int"))
+train_set = train_set.withColumn(
+    "no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int")
+)
+train_set = train_set.withColumn(
+    "no_of_week_nights", train_set["no_of_week_nights"].cast("int")
+)
 
 # COMMAND ----------
 # Feature engineering setup
@@ -122,7 +128,9 @@ training_set = fe.create_training_set(
 training_df = training_set.load_df().toPandas()
 
 # Calculate no_of_nights for training and test set
-test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
+test_set["no_of_nights"] = (
+    test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
+)
 
 # COMMAND ----------
 # Split features and target
@@ -194,5 +202,5 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
 
 mlflow.register_model(
     model_uri=model_uri,
-    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
+    name=f"{catalog_name}.{schema_name}.vs_hotel_reservations_model_fe",
 )
