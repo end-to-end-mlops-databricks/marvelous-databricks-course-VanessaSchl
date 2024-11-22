@@ -103,6 +103,7 @@ with mlflow.start_run(
         code_paths=["../hotel_reservations-2.2.2-py3-none-any.whl"],
         artifact_path="vs-svc-pipeline-model",
         signature=signature,
+        conda_env=conda_env,
     )
 
 # COMMAND ----------
