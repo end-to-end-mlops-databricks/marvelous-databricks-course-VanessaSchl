@@ -52,7 +52,7 @@ X_train = data_processor.preprocess_data(
     include_fe_features=True,
     scale_features=True,
 )
-y_train = y_train.replace({"Not Cancelled": 1, "Cancelled": 0})
+y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
 X_test = data_processor.preprocess_data(
     X=X_test,
     encode_features="cat_features",
@@ -60,7 +60,7 @@ X_test = data_processor.preprocess_data(
     include_fe_features=True,
     scale_features=True,
 )
-y_test = y_test.replace({"Not Cancelled": 1, "Cancelled": 0})
+y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
 
 # COMMAND ----------
 # Initialize and train the model

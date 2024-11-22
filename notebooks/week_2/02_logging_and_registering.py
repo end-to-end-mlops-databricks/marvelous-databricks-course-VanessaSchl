@@ -61,10 +61,10 @@ with mlflow.start_run(
 ) as run:
     run_id = run.info.run_id
 
-    y_train = y_train.replace({"Not Cancelled": 1, "Cancelled": 0})
+    y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
-    y_test = y_test.replace({"Not Cancelled": 1, "Cancelled": 0})
+    y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(y_test, y_pred)
