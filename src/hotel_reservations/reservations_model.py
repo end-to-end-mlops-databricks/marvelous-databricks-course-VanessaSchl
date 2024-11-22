@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, precision_score
 from sklearn.preprocessing import StandardScaler
-from xgboost import XGBClassifier
+from xgboost.sklearn import XGBClassifier
 
 from hotel_reservations.config import ProjectConfig
 
