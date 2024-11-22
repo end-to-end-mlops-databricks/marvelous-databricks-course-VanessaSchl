@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.1-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -164,6 +164,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
         encode_features="original_target",
         extract_features="target",
         include_fe_features=False,
+        scale_features=False,
     )
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
@@ -172,6 +173,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
         encode_features="original_target",
         extract_features="target",
         include_fe_features=False,
+        scale_features=False,
     )
 
     # Evaluate the model performance
@@ -191,6 +193,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
     fe.log_model(
         model=pipeline,
         flavor=mlflow.sklearn,
+        code_paths=["../hotel_reservations-2.2.2-py3-none-any.whl"],
         artifact_path="svc-pipeline-model-fe",
         training_set=training_set,
     )

@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.1-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -49,24 +49,28 @@ X_train = data_processor.preprocess_data(
     encode_features="cat_features",
     extract_features="num_features",
     include_fe_features=True,
+    scale_features=True,
 )
 y_train = data_processor.preprocess_data(
     X=y_train,
     encode_features="original_target",
     extract_features="target",
     include_fe_features=False,
+    scale_features=False,
 )
 X_test = data_processor.preprocess_data(
     X=X_test,
     encode_features="cat_features",
     extract_features="num_features",
     include_fe_features=True,
+    scale_features=True,
 )
 y_test = data_processor.preprocess_data(
     X=y_test,
     encode_features="original_target",
     extract_features="target",
     include_fe_features=False,
+    scale_features=False,
 )
 
 # COMMAND ----------

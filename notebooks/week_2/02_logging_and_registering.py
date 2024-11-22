@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.1-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -69,6 +69,7 @@ with mlflow.start_run(
         encode_features="original_target",
         extract_features="target",
         include_fe_features=False,
+        scale_features=False,
     )
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
@@ -77,6 +78,7 @@ with mlflow.start_run(
         encode_features="original_target",
         extract_features="target",
         include_fe_features=False,
+        scale_features=False,
     )
 
     # Evaluate the model performance
@@ -101,9 +103,11 @@ with mlflow.start_run(
     mlflow.log_input(dataset, context="training")
 
     mlflow.sklearn.log_model(
-        sk_model=pipeline, artifact_path="vs-svc-pipeline-model", signature=signature
+        sk_model=pipeline,
+        code_paths=["../hotel_reservations-2.2.2-py3-none-any.whl"],
+        artifact_path="vs-svc-pipeline-model",
+        signature=signature,
     )
-
 
 # COMMAND ----------
 model_version = mlflow.register_model(

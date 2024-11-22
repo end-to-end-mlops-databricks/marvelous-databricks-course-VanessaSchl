@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl --force-reinstall
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -74,7 +74,7 @@ df = pd.concat([train_set, test_set])
 
 # Load the MLflow model for predictions
 pipeline = mlflow.sklearn.load_model(
-    f"models:/{catalog_name}.{schema_name}.vs_hotel_reservations_model_basic/1"
+    f"models:/{catalog_name}.{schema_name}.vs_hotel_reservations_model_basic/3"
 )
 
 # COMMAND ----------

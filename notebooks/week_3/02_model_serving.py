@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl --force-reinstall
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -59,7 +59,7 @@ workspace.serving_endpoints.create(
                 entity_name=f"{catalog_name}.{schema_name}.vs_hotel_reservations_model_fe",
                 scale_to_zero_enabled=True,
                 workload_size="Small",
-                entity_version=1,
+                entity_version=4,
             )
         ]
     ),

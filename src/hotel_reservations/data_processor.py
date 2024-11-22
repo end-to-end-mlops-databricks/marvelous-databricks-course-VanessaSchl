@@ -7,6 +7,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from hotel_reservations.config import ProjectConfig
 
@@ -19,19 +20,22 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             fe_features = []
         self.config = config  # Store the configuration
         self.fe_features = fe_features  # Store the feature engineering features
+        self.scaler = StandardScaler()  # Initialize the StandardScaler
 
     def fit(
         self, X: pd.DataFrame, y: pd.DataFrame | None = None
     ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
+        self.scaler.fit(X)
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
         X = self.one_hot_encode(X=X, features="cat_features")
-        return self.extract_features(
+        X = self.extract_features(
             X=X, features="num_features", include_fe_features=True
         )
+        return self.scale_features(X=X)
 
     def preprocess_data(
         self,
@@ -39,16 +43,21 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         encode_features: str,
         extract_features: str,
         include_fe_features: bool = True,
+        scale_features: bool = True,
     ) -> pd.DataFrame:
         """Preprocess the DataFrame"""
 
         # One-hot-encode categorical features and fix column names
         X = self.one_hot_encode(X=X, features=encode_features)
 
-        # Extract target and relevant features
+        # Extract relevant features
         X = self.extract_features(
             X=X, features=extract_features, include_fe_features=include_fe_features
         )
+
+        # Scale features if necessary
+        if scale_features:
+            X = self.scale_features(X=X)
 
         return X
 
@@ -79,6 +88,11 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             relevant_columns += self.fe_features
 
         return X[relevant_columns]
+
+    def scale_features(self, X: pd.DataFrame) -> pd.DataFrame:
+        """Scale the numerical features."""
+        X = self.scaler.transform(X)
+        return X
 
     def split_data(
         self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42
