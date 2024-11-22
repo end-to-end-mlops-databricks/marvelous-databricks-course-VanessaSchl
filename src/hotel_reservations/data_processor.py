@@ -3,8 +3,6 @@
 from copy import deepcopy
 
 import pandas as pd
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import current_timestamp, to_utc_timestamp
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -106,34 +104,3 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             X, test_size=test_size, random_state=random_state
         )
         return train_set, test_set
-
-    def save_to_catalog(
-        self, spark: SparkSession, train_set: pd.DataFrame, test_set: pd.DataFrame
-    ) -> None:
-        """Save the train and test sets into Databricks tables."""
-
-        train_set_with_timestamp = spark.createDataFrame(train_set).withColumn(
-            "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
-        )
-
-        test_set_with_timestamp = spark.createDataFrame(test_set).withColumn(
-            "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
-        )
-
-        train_set_with_timestamp.write.mode("append").saveAsTable(
-            f"{self.config.catalog_name}.{self.config.schema_name}.train_set_vs"
-        )
-
-        test_set_with_timestamp.write.mode("append").saveAsTable(
-            f"{self.config.catalog_name}.{self.config.schema_name}.test_set_vs"
-        )
-
-        spark.sql(
-            f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.train_set_vs "
-            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
-        )
-
-        spark.sql(
-            f"ALTER TABLE {self.config.catalog_name}.{self.config.schema_name}.test_set_vs "
-            "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
-        )
