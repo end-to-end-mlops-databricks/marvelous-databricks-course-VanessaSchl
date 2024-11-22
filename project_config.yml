@@ -48,6 +48,4 @@ cat_features:
   - room_type_reserved
   - market_segment_type
 
-original_target: booking_status
-
-target: booking_status_canceled
+target: booking_status

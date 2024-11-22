@@ -23,26 +23,23 @@ mlflow.set_registry_uri(
 # COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
-# Extract configuration details
-num_features = config.num_features
-target = config.target
-parameters = config.parameters
-catalog_name = config.catalog_name
-schema_name = config.schema_name
-
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()
 
 # COMMAND ----------
 # Load training and testing sets from Databricks tables
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
+train_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
+).toPandas()
+test_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
+).toPandas()
 
-y_train = train_set[[config.original_target]]
-X_train = train_set.drop(columns=config.original_target)
+y_train = train_set[[config.target]]
+X_train = train_set.drop(columns=config.target)
 
-y_test = test_set[[config.original_target]]
-X_test = test_set.drop(columns=config.original_target)
+y_test = test_set[[config.target]]
+X_test = test_set.drop(columns=config.target)
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC
@@ -64,22 +61,10 @@ with mlflow.start_run(
 ) as run:
     run_id = run.info.run_id
 
-    y_train = pipeline.named_steps["preprocessor"].preprocess_data(
-        X=y_train,
-        encode_features="original_target",
-        extract_features="target",
-        include_fe_features=False,
-        scale_features=False,
-    )
+    y_train = y_train.replace({"Not Cancelled": 1, "Cancelled": 0})
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
-    y_test = pipeline.named_steps["preprocessor"].preprocess_data(
-        X=y_test,
-        encode_features="original_target",
-        extract_features="target",
-        include_fe_features=False,
-        scale_features=False,
-    )
+    y_test = y_test.replace({"Not Cancelled": 1, "Cancelled": 0})
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(y_test, y_pred)
@@ -89,15 +74,17 @@ with mlflow.start_run(
 
     # Log parameters, metrics, and the model to MLflow
     mlflow.log_param("model_type", "SVC with preprocessing")
-    mlflow.log_params(parameters)
+    mlflow.log_params(config.parameters)
     mlflow.log_metric("accuracy", accuracy)
     mlflow.log_metric("precision", precision)
     signature = infer_signature(model_input=X_train, model_output=y_pred)
 
-    train_set_spark = spark.table(f"{catalog_name}.{schema_name}.train_set_vs")
+    train_set_spark = spark.table(
+        f"{config.catalog_name}.{config.schema_name}.train_set_vs"
+    )
     dataset = mlflow.data.from_spark(
         train_set_spark,
-        table_name=f"{catalog_name}.{schema_name}.train_set_vs",
+        table_name=f"{config.catalog_name}.{config.schema_name}.train_set_vs",
         version="0",
     )
     mlflow.log_input(dataset, context="training")
@@ -112,7 +99,7 @@ with mlflow.start_run(
 # COMMAND ----------
 model_version = mlflow.register_model(
     model_uri=f"runs:/{run_id}/vs-svc-pipeline-model",
-    name=f"{catalog_name}.{schema_name}.vs_hotel_reservations_model_basic",
+    name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_basic",
     tags={"git_sha": f"{GIT_SHA}"},
 )
 

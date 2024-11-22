@@ -26,15 +26,13 @@ workspace = WorkspaceClient()
 # COMMAND ----------
 # Load config
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
-catalog_name = config.catalog_name
-schema_name = config.schema_name
 
 # COMMAND ----------
 # Create online table of hotel features
-online_table_name = f"{catalog_name}.{schema_name}.hotel_features_online"
+online_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features_online"
 spec = OnlineTableSpec(
     primary_key_columns=["Id"],
-    source_table_full_name=f"{catalog_name}.{schema_name}.hotel_features",
+    source_table_full_name=f"{config.catalog_name}.{config.schema_name}.hotel_features",
     run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict(
         {"triggered": "true"}
     ),
@@ -56,7 +54,7 @@ workspace.serving_endpoints.create(
     config=EndpointCoreConfigInput(
         served_entities=[
             ServedEntityInput(
-                entity_name=f"{catalog_name}.{schema_name}.vs_hotel_reservations_model_fe",
+                entity_name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_fe",
                 scale_to_zero_enabled=True,
                 workload_size="Small",
                 entity_version=4,
@@ -98,7 +96,9 @@ required_columns = [
     "no_of_special_requests",
 ]
 
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
+train_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
+).toPandas()
 
 sampled_records = (
     train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")

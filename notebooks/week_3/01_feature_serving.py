@@ -47,21 +47,19 @@ mlflow.set_registry_uri("databricks-uc")
 # Load config
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
-# Get feature columns details
-num_features = config.num_features
-original_target = config.original_target
-target = config.target
-parameters = config.parameters
-catalog_name = config.catalog_name
-schema_name = config.schema_name
-
 # Define table names
-feature_table_name = f"{catalog_name}.{schema_name}.hotel_features_preds"
-online_table_name = f"{catalog_name}.{schema_name}.hotel_features_preds_online"
+feature_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features_preds"
+online_table_name = (
+    f"{config.catalog_name}.{config.schema_name}.hotel_features_preds_online"
+)
 
 # Load training and test sets from Catalog
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
+train_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
+).toPandas()
+test_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
+).toPandas()
 
 df = pd.concat([train_set, test_set])
 
@@ -74,7 +72,7 @@ df = pd.concat([train_set, test_set])
 
 # Load the MLflow model for predictions
 pipeline = mlflow.sklearn.load_model(
-    f"models:/{catalog_name}.{schema_name}.vs_hotel_reservations_model_basic/3"
+    f"models:/{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_basic/3"
 )
 
 # COMMAND ----------
@@ -89,8 +87,8 @@ preds_df = df[
         "avg_price_per_room",
     ]
 ]
-preds_df["predicted_booking_status_canceled"] = pipeline.predict(
-    df.drop(columns=[original_target])
+preds_df["predicted_booking_status"] = pipeline.predict(
+    df.drop(columns=[config.target])
 )
 
 preds_df = spark.createDataFrame(preds_df)
@@ -146,7 +144,7 @@ features = [
 ]
 
 # Create the feature spec for serving
-feature_spec_name = f"{catalog_name}.{schema_name}.return_predictions_vs"
+feature_spec_name = f"{config.catalog_name}.{config.schema_name}.return_predictions_vs"
 
 fe.create_feature_spec(name=feature_spec_name, features=features, exclude_columns=None)
 
@@ -177,7 +175,6 @@ workspace.serving_endpoints.create(
 # MAGIC ## Call The Endpoint
 
 # COMMAND ----------
-
 id_list = preds_df["Booking_ID"]
 
 # COMMAND ----------
