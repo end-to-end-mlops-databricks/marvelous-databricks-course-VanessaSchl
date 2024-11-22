@@ -26,6 +26,10 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self, X: pd.DataFrame, y: pd.DataFrame | None = None
     ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
+        X = self.one_hot_encode(X=X, features="cat_features")
+        X = self.extract_features(
+            X=X, features="num_features", include_fe_features=True
+        )
         self.scaler.fit(X)
         return self
 
