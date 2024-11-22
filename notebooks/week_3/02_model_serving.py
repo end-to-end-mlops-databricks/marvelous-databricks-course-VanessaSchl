@@ -37,7 +37,7 @@ workspace.serving_endpoints.create(
                 entity_name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_basic",
                 scale_to_zero_enabled=True,
                 workload_size="Small",
-                entity_version=4,
+                entity_version=3,
             )
         ]
     ),
@@ -94,7 +94,9 @@ dataframe_records[0]
 # COMMAND ----------
 start_time = time.time()
 
-model_serving_endpoint = f"https://{host}/serving-endpoints/hotel-reservations-model-serving-vs/invocations"
+model_serving_endpoint = (
+    f"https://{host}/serving-endpoints/hotel-reservations-model-serving-vs/invocations"
+)
 
 response = requests.post(
     f"{model_serving_endpoint}",

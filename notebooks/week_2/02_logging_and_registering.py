@@ -9,6 +9,7 @@ import mlflow
 from mlflow.models import infer_signature
 from pyspark.sql import SparkSession
 from sklearn.pipeline import Pipeline
+from mlflow.utils.environment import _mlflow_conda_env
 
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
@@ -88,6 +89,14 @@ with mlflow.start_run(
         version="0",
     )
     mlflow.log_input(dataset, context="training")
+
+    conda_env = _mlflow_conda_env(
+        additional_conda_deps=None,
+        additional_pip_deps=[
+            "code/hotel_reservations-2.2.2-py3-none-any.whl",
+        ],
+        additional_conda_channels=None,
+    )
 
     mlflow.sklearn.log_model(
         sk_model=pipeline,
