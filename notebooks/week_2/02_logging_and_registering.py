@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
