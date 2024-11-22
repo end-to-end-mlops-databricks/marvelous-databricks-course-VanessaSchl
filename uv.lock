@@ -341,15 +341,15 @@ wheels = [
 
 [[package]]
 name = "databricks-sdk"
-version = "0.32.3"
+version = "0.32.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "google-auth" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/2c/a6fe9382dc06a3bc5ce8ba5ddda2d8236cb81f85a1f0b7746eb329bd9277/databricks_sdk-0.32.3.tar.gz", hash = "sha256:bdb8acef3d79e83f05e7fca6cd6128b2b46a4bb4de240374c70050b5f029d4f2", size = 572703 }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/d1/0b74723886734d49ad373520f1de33c3513490666df648aedcb34a758168/databricks_sdk-0.32.2.tar.gz", hash = "sha256:7af6eaa73a987dc6ff4b4cb056a932b1575602692b164a52b56ccdef7af55660", size = 570910 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0d/45/a740906549189c434033788446f202358a99301cb6b7884e9cac47578126/databricks_sdk-0.32.3-py3-none-any.whl", hash = "sha256:66b57cfd7731f541df014d136d5c257aa45ea4caa95d0d3fbaaed5b43142f32a", size = 555103 },
+    { url = "https://files.pythonhosted.org/packages/54/a2/e48e21187eb03ecd7b1f2f37bfa9eeda1adc6a9b1c1b2f7b599118ea4d6c/databricks_sdk-0.32.2-py3-none-any.whl", hash = "sha256:eea4e1942ddd4fc8c36b88e4c7f948e5486fbb46aa70174101de1a0b1a0e0dc8", size = 554104 },
 ]
 
 [[package]]
@@ -701,22 +701,22 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cffi", specifier = ">=1.17.1,<2" },
-    { name = "cloudpickle", specifier = ">=3.0.0,<4" },
-    { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.1,<16" },
-    { name = "databricks-feature-engineering", specifier = ">=0.6,<1" },
-    { name = "databricks-sdk", specifier = ">=0.32.0,<0.33" },
+    { name = "cffi", specifier = "==1.17.1" },
+    { name = "cloudpickle", specifier = "==3.1.0" },
+    { name = "databricks-connect", marker = "extra == 'dev'", specifier = ">=15.4.3,<16" },
+    { name = "databricks-feature-engineering", specifier = "==0.7" },
+    { name = "databricks-sdk", specifier = "==0.32.2" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29.5,<7" },
-    { name = "matplotlib", specifier = ">=3.9.2,<4" },
-    { name = "mlflow", specifier = ">=2.16.0,<3" },
-    { name = "numpy", specifier = ">=1.26.4,<2" },
-    { name = "pandas", specifier = ">=2.2.2,<3" },
+    { name = "matplotlib", specifier = "==3.9.2" },
+    { name = "mlflow", specifier = "==2.17.2" },
+    { name = "numpy", specifier = "==1.26.4" },
+    { name = "pandas", specifier = "==2.2.3" },
     { name = "pip", marker = "extra == 'dev'", specifier = ">=24.2" },
-    { name = "pyarrow", specifier = ">=15.0.2,<16" },
-    { name = "scikit-learn", specifier = ">=1.5.1,<2" },
-    { name = "scipy", specifier = ">=1.14.1,<2" },
-    { name = "seaborn", specifier = ">=0.13.0,<1" },
-    { name = "xgboost", specifier = ">=2.1.2,<3" },
+    { name = "pyarrow", specifier = "==15.0.2" },
+    { name = "scikit-learn", specifier = "==1.5.2" },
+    { name = "scipy", specifier = "==1.14.1" },
+    { name = "seaborn", specifier = "==0.13.2" },
+    { name = "xgboost", specifier = "==2.1.2" },
 ]
 
 [[package]]
