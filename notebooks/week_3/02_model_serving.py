@@ -86,7 +86,7 @@ required_columns = [
     "no_of_special_requests",
 ]
 
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").toPandas()
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
 
 sampled_records = (
     train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")

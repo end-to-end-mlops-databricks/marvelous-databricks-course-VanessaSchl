@@ -1,13 +1,11 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
 
 # COMMAND ----------
-import random
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import mlflow
 import pandas as pd
@@ -27,8 +25,13 @@ from hotel_reservations.config import ProjectConfig
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()
 
+token = (
+    dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+)
+host = spark.conf.get("spark.databricks.workspaceUrl")
+
 # Initialize Databricks clients
-workspace = WorkspaceClient()
+workspace = WorkspaceClient(host=host, token=token)
 fe = feature_engineering.FeatureEngineeringClient()
 
 # Set the MLflow registry URI
@@ -57,8 +60,8 @@ feature_table_name = f"{catalog_name}.{schema_name}.hotel_features_preds"
 online_table_name = f"{catalog_name}.{schema_name}.hotel_features_preds_online"
 
 # Load training and test sets from Catalog
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set").toPandas()
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set").toPandas()
+train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").toPandas()
+test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
 
 df = pd.concat([train_set, test_set])
 
@@ -172,12 +175,6 @@ workspace.serving_endpoints.create(
 
 # MAGIC %md
 # MAGIC ## Call The Endpoint
-
-# COMMAND ----------
-token = (
-    dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
-)
-host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
 
