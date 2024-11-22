@@ -9,10 +9,6 @@ import time
 
 import requests
 from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.catalog import (
-    OnlineTableSpec,
-    OnlineTableSpecTriggeredSchedulingPolicy,
-)
 from databricks.sdk.service.serving import EndpointCoreConfigInput, ServedEntityInput
 from pyspark.sql import SparkSession
 
@@ -28,33 +24,17 @@ workspace = WorkspaceClient()
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # COMMAND ----------
-# Create online table of hotel features
-online_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features_online"
-spec = OnlineTableSpec(
-    primary_key_columns=["Id"],
-    source_table_full_name=f"{config.catalog_name}.{config.schema_name}.hotel_features",
-    run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict(
-        {"triggered": "true"}
-    ),
-    perform_full_copy=False,
-)
-
-online_table_pipeline = workspace.online_tables.create(
-    name=online_table_name, spec=spec
-)
-
-# COMMAND ----------
 
 # MAGIC %md
 # MAGIC ### Create endpoint
 
 # COMMAND ----------
 workspace.serving_endpoints.create(
-    name="hotel-reservations-model-serving-fe-vs",
+    name="hotel-reservations-model-serving-vs",
     config=EndpointCoreConfigInput(
         served_entities=[
             ServedEntityInput(
-                entity_name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_fe",
+                entity_name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_basic",
                 scale_to_zero_enabled=True,
                 workload_size="Small",
                 entity_version=4,
@@ -75,8 +55,6 @@ token = (
 host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
-# Excluding "no_of_previous_cancellations" and "avg_price_per_room"
-# because they will be taken from feature look up
 required_columns = [
     "Booking_ID",
     "no_of_adults",
@@ -90,10 +68,12 @@ required_columns = [
     "arrival_date",
     "market_segment_type",
     "repeated_guest",
+    "no_of_previous_cancellations",
     "no_of_previous_bookings_not_canceled",
     "no_of_weekend_nights",
     "no_of_week_nights",
     "no_of_special_requests",
+    "avg_price_per_room",
 ]
 
 train_set = spark.table(
@@ -114,7 +94,7 @@ dataframe_records[0]
 # COMMAND ----------
 start_time = time.time()
 
-model_serving_endpoint = f"https://{host}/serving-endpoints/hotel-reservations-model-serving-fe-vs/invocations"
+model_serving_endpoint = f"https://{host}/serving-endpoints/hotel-reservations-model-serving-vs/invocations"
 
 response = requests.post(
     f"{model_serving_endpoint}",
