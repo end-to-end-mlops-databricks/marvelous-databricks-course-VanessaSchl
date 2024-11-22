@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -24,15 +24,26 @@ spark = SparkSession.builder.getOrCreate()
 workspace = WorkspaceClient()
 
 # COMMAND ----------
-
 # Load config
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 catalog_name = config.catalog_name
 schema_name = config.schema_name
 
 # COMMAND ----------
-catalog_name = config.catalog_name
-schema_name = config.schema_name
+# Create online table of hotel features
+online_table_name = f"{catalog_name}.{schema_name}.hotel_features_online"
+spec = OnlineTableSpec(
+    primary_key_columns=["Id"],
+    source_table_full_name=f"{catalog_name}.{schema_name}.hotel_features",
+    run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict(
+        {"triggered": "true"}
+    ),
+    perform_full_copy=False,
+)
+
+online_table_pipeline = workspace.online_tables.create(
+    name=online_table_name, spec=spec
+)
 
 # COMMAND ----------
 
@@ -41,7 +52,7 @@ schema_name = config.schema_name
 
 # COMMAND ----------
 workspace.serving_endpoints.create(
-    name="house-prices-model-serving-fe-vs",
+    name="hotel-reservations-model-serving-fe-vs",
     config=EndpointCoreConfigInput(
         served_entities=[
             ServedEntityInput(
@@ -66,7 +77,7 @@ token = (
 host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
-# Excluding "no_of_weekend_nights", "no_of_week_nights", "no_of_previous_cancellations", "avg_price_per_room",
+# Excluding "no_of_previous_cancellations" and "avg_price_per_room"
 # because they will be taken from feature look up
 required_columns = [
     "Booking_ID",
@@ -82,7 +93,8 @@ required_columns = [
     "market_segment_type",
     "repeated_guest",
     "no_of_previous_bookings_not_canceled",
-    "avg_price_per_room",
+    "no_of_weekend_nights",
+    "no_of_week_nights",
     "no_of_special_requests",
 ]
 
