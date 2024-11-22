@@ -129,10 +129,10 @@ test_set["no_of_nights"] = (
 # COMMAND ----------
 # Split features and target
 y_train = training_df[[config.target]]
-X_train = training_df.drop(columns=config.target)
+X_train = training_df.drop(columns=[config.target, "update_timestamp_utc"])
 
 y_test = test_set[[config.target]]
-X_test = test_set.drop(columns=config.target)
+X_test = test_set.drop(columns=[config.target, "update_timestamp_utc"])
 
 # COMMAND ----------
 # Setup model pipeline

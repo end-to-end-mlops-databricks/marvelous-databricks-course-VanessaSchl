@@ -37,10 +37,10 @@ test_set = spark.table(
 ).toPandas()
 
 y_train = train_set[[config.target]]
-X_train = train_set.drop(columns=config.target)
+X_train = train_set.drop(columns=[config.target, "update_timestamp_utc"])
 
 y_test = test_set[[config.target]]
-X_test = test_set.drop(columns=config.target)
+X_test = test_set.drop(columns=[config.target, "update_timestamp_utc"])
 
 # COMMAND ----------
 # Create the pipeline with preprocessing and SVC
