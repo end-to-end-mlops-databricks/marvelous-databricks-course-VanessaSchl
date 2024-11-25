@@ -1,6 +1,6 @@
 [project]
 name = "hotel-reservations"
-version = "2.2.2"
+version = "3.0.0"
 description = "Hotel reservation project"
 readme = "README.md"
 requires-python = "==3.11.*"

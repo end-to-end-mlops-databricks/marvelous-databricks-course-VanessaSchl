@@ -4,8 +4,9 @@ from copy import deepcopy
 
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 from hotel_reservations.config import ProjectConfig
 
@@ -14,63 +15,62 @@ class DataProcessor(BaseEstimator, TransformerMixin):
     """Class to preprocess and split data for the Hotel Reservations project."""
 
     def __init__(self, config: ProjectConfig, fe_features: list = None):
-        if fe_features is None:
+        if not isinstance(fe_features, list):
             fe_features = []
         self.config = config  # Store the configuration
         self.fe_features = fe_features  # Store the feature engineering features
-        self.scaler = StandardScaler()  # Initialize the StandardScaler
+        self.column_transformer = (
+            ColumnTransformer(  # Initialize the column transformer
+                transformers=[
+                    (
+                        "cat",
+                        OneHotEncoder(handle_unknown="ignore"),
+                        getattr(self.config, "cat_features"),
+                    ),
+                    ("scale", StandardScaler(), getattr(self.config, "num_features")),
+                ],
+                remainder="passthrough",
+            )
+        )
 
     def fit(
         self, X: pd.DataFrame, y: pd.DataFrame | None = None
     ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
-        X = self.one_hot_encode(X=X, features="cat_features")
-        X = self.extract_features(
-            X=X, features="num_features", include_fe_features=True
-        )
-        self.scaler.fit(X)
+        self.column_transformer.fit(X)
         return self
 
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
-        X = self.one_hot_encode(X=X, features="cat_features")
+        X = self.column_transformer.transform(X)
+        # Extract relevant features
         X = self.extract_features(
             X=X, features="num_features", include_fe_features=True
         )
-        return self.scale_features(X=X)
+        return self.fix_column_names(X=X)
 
     def preprocess_data(
         self,
         X: pd.DataFrame,
-        encode_features: str,
         extract_features: str,
         include_fe_features: bool = True,
-        scale_features: bool = True,
     ) -> pd.DataFrame:
         """Preprocess the DataFrame"""
 
-        # One-hot-encode categorical features and fix column names
-        X = self.one_hot_encode(X=X, features=encode_features)
+        # Preprocess data with One-Hot Encoding and Scaling
+        X = self.column_transformer.transform(X)
+        X = self.fix_column_names(X=X)
 
         # Extract relevant features
         X = self.extract_features(
             X=X, features=extract_features, include_fe_features=include_fe_features
         )
 
-        # Scale features if necessary
-        if scale_features:
-            X = self.scale_features(X=X)
-
         return X
 
-    def one_hot_encode(self, X: pd.DataFrame, features: str) -> pd.DataFrame:
+    def fix_column_names(self, X: pd.DataFrame) -> pd.DataFrame:
         """One-hot encode the categorical features."""
         # One-hot-encode categorical features and fix column names
-        cat_features = getattr(self.config, features)
-        if not isinstance(cat_features, list):
-            cat_features = [cat_features]
-        X = pd.get_dummies(X, columns=cat_features)
-
         col_names = X.columns.to_list()
         for i, col in enumerate(col_names):
             col = col.replace(" ", "_").lower()
@@ -90,11 +90,6 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             relevant_columns += self.fe_features
 
         return X[relevant_columns]
-
-    def scale_features(self, X: pd.DataFrame) -> pd.DataFrame:
-        """Scale the numerical features."""
-        X = self.scaler.transform(X)
-        return X
 
     def split_data(
         self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42

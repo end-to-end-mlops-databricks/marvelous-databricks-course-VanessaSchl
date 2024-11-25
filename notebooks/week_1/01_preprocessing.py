@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.2-py3-none-any.whl  --force-reinstall
+# MAGIC %pip install ../hotel_reservations-3.0.0-py3-none-any.whl  --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -47,18 +47,14 @@ X_test = test_set.drop(columns=config.target)
 data_processor.fit(X=X_train, y=y_train)
 X_train = data_processor.preprocess_data(
     X=X_train,
-    encode_features="cat_features",
     extract_features="num_features",
     include_fe_features=True,
-    scale_features=True,
 )
 y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
 X_test = data_processor.preprocess_data(
     X=X_test,
-    encode_features="cat_features",
     extract_features="num_features",
     include_fe_features=True,
-    scale_features=True,
 )
 y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
 
