@@ -29,7 +29,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
                     ("scale_num", StandardScaler(), getattr(self.config, "num_features")),
                     ("scale_fe", StandardScaler(), fe_features),
                 ],
-                remainder="passthrough",
+                remainder="drop",
             )
         )
 
