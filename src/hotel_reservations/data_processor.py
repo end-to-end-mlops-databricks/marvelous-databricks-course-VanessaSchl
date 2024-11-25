@@ -1,7 +1,6 @@
 """Data Processor class for the Hotel Reservations project."""
 
-from copy import deepcopy
-
+import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
@@ -28,6 +27,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
                         getattr(self.config, "cat_features"),
                     ),
                     ("scale", StandardScaler(), getattr(self.config, "num_features")),
+                    ("scale", StandardScaler(), fe_features),
                 ],
                 remainder="passthrough",
             )
@@ -37,59 +37,12 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self, X: pd.DataFrame, y: pd.DataFrame | None = None
     ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
-        self.column_transformer.fit(X)
+        self.column_transformer.fit(X, y)
         return self
 
-    def transform(self, X: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, X: pd.DataFrame) -> np.ndarray:
         """Preprocess data with One-Hot Encoding and relevant feature extraction."""
-        X = self.column_transformer.transform(X)
-        # Extract relevant features
-        X = self.extract_features(
-            X=X, features="num_features", include_fe_features=True
-        )
-        return self.fix_column_names(X=X)
-
-    def preprocess_data(
-        self,
-        X: pd.DataFrame,
-        extract_features: str,
-        include_fe_features: bool = True,
-    ) -> pd.DataFrame:
-        """Preprocess the DataFrame"""
-
-        # Preprocess data with One-Hot Encoding and Scaling
-        X = self.column_transformer.transform(X)
-        X = self.fix_column_names(X=X)
-
-        # Extract relevant features
-        X = self.extract_features(
-            X=X, features=extract_features, include_fe_features=include_fe_features
-        )
-
-        return X
-
-    def fix_column_names(self, X: pd.DataFrame) -> pd.DataFrame:
-        """One-hot encode the categorical features."""
-        # One-hot-encode categorical features and fix column names
-        col_names = X.columns.to_list()
-        for i, col in enumerate(col_names):
-            col = col.replace(" ", "_").lower()
-            col_names[i] = col
-        X.columns = col_names
-
-        return X
-
-    def extract_features(
-        self, X: pd.DataFrame, features: str, include_fe_features: bool = True
-    ) -> pd.DataFrame:
-        """Extract the target and relevant features."""
-        num_features = getattr(self.config, features)
-
-        relevant_columns = deepcopy(num_features)
-        if include_fe_features:
-            relevant_columns += self.fe_features
-
-        return X[relevant_columns]
+        return self.column_transformer.transform(X)
 
     def split_data(
         self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42

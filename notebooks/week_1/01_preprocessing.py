@@ -45,18 +45,10 @@ X_test = test_set.drop(columns=config.target)
 # COMMAND ----------
 # Preprocess the data
 data_processor.fit(X=X_train, y=y_train)
-X_train = data_processor.preprocess_data(
-    X=X_train,
-    extract_features="num_features",
-    include_fe_features=True,
-)
-y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
-X_test = data_processor.preprocess_data(
-    X=X_test,
-    extract_features="num_features",
-    include_fe_features=True,
-)
-y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
+X_train = data_processor.transform(X=X_train)
+y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
+X_test = data_processor.transform(X=X_test)
+y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
 
 # COMMAND ----------
 # Initialize and train the model

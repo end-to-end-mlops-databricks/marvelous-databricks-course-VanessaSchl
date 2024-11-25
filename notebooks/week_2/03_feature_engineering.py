@@ -153,10 +153,10 @@ GIT_SHA = "ffa63b430205ff7"
 
 with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as run:
     run_id = run.info.run_id
-    y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
+    y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
-    y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int)
+    y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(y_test, y_pred)
@@ -175,7 +175,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
     fe.log_model(
         model=pipeline,
         flavor=mlflow.sklearn,
-        code_paths=["../hotel_reservations-2.2.2-py3-none-any.whl"],
+        code_paths=["../hotel_reservations-3.0.0-py3-none-any.whl"],
         artifact_path="svc-pipeline-model-fe",
         training_set=training_set,
     )
