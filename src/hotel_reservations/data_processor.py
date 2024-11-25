@@ -26,8 +26,8 @@ class DataProcessor(BaseEstimator, TransformerMixin):
                         OneHotEncoder(handle_unknown="ignore"),
                         getattr(self.config, "cat_features"),
                     ),
-                    ("scale", StandardScaler(), getattr(self.config, "num_features")),
-                    ("scale", StandardScaler(), fe_features),
+                    ("scale_num", StandardScaler(), getattr(self.config, "num_features")),
+                    ("scale_fe", StandardScaler(), fe_features),
                 ],
                 remainder="passthrough",
             )
