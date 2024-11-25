@@ -1,10 +1,10 @@
 [project]
-name = "mlops-with-databricks"
-version = "0.0.1"
-description = "MLOps with Databricks"
+name = "hotel-reservations"
+version = "2.2.0"
+description = "Hotel reservation project"
 readme = "README.md"
-requires-python = "==3.11"
-dependencies = ["lightgbm>=4.5.0, <5",
+requires-python = "==3.11.*"
+dependencies = ["xgboost>=2.1.2, <3",
                 "scikit-learn>=1.5.1, <2",
                 "cloudpickle>=3.0.0, <4",
                 "mlflow>=2.16.0, <3",
@@ -14,6 +14,7 @@ dependencies = ["lightgbm>=4.5.0, <5",
                 "cffi>=1.17.1, <2",
                 "scipy>=1.14.1, <2",
                 "matplotlib>=3.9.2, <4",
+                "seaborn>=0.13.0, <1",
                 "databricks-feature-engineering>=0.6, <1"]
 
 [project.optional-dependencies]
@@ -33,6 +34,8 @@ select = [
 ]
 ignore = [
     "E501",  # line-too-long
+    "F821",  # undefined-name
+    "E402",  # module-level-import-not-at-top
 ]
 
 [tool.ruff.format]
