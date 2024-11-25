@@ -49,9 +49,7 @@ workspace.serving_endpoints.create(
 # MAGIC ### Call the endpoint
 
 # COMMAND ----------
-token = (
-    dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
-)
+token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
 host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # COMMAND ----------
@@ -76,27 +74,15 @@ required_columns = [
     "avg_price_per_room",
 ]
 
-train_set = spark.table(
-    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
-).toPandas()
+train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs").toPandas()
 
-sampled_records = (
-    train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
-)
+sampled_records = train_set[required_columns].sample(n=1000, replace=True).to_dict(orient="records")
 dataframe_records = [[record] for record in sampled_records]
-
-# COMMAND ----------
-train_set.dtypes
-
-# COMMAND ----------
-dataframe_records[0]
 
 # COMMAND ----------
 start_time = time.time()
 
-model_serving_endpoint = (
-    f"https://{host}/serving-endpoints/hotel-reservations-model-serving-vs/invocations"
-)
+model_serving_endpoint = f"https://{host}/serving-endpoints/hotel-reservations-model-serving-vs/invocations"
 
 response = requests.post(
     f"{model_serving_endpoint}",

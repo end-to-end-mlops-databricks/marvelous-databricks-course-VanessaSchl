@@ -80,20 +80,14 @@ $$
 )
 # COMMAND ----------
 # Load training and test sets
-train_set = spark.table(
-    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
-).drop("no_of_previous_cancellations", "avg_price_per_room")
-test_set = spark.table(
-    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
-).toPandas()
+train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs").drop(
+    "no_of_previous_cancellations", "avg_price_per_room"
+)
+test_set = spark.table(f"{config.catalog_name}.{config.schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
-train_set = train_set.withColumn(
-    "no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int")
-)
-train_set = train_set.withColumn(
-    "no_of_week_nights", train_set["no_of_week_nights"].cast("int")
-)
+train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
+train_set = train_set.withColumn("no_of_week_nights", train_set["no_of_week_nights"].cast("int"))
 
 # COMMAND ----------
 # Feature engineering setup
@@ -122,9 +116,7 @@ training_set = fe.create_training_set(
 training_df = training_set.load_df().toPandas()
 
 # Calculate no_of_nights for training and test set
-test_set["no_of_nights"] = (
-    test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
-)
+test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_week_nights"]
 
 # COMMAND ----------
 # Split features and target

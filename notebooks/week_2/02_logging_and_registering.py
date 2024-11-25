@@ -7,9 +7,9 @@ dbutils.library.restartPython()
 # COMMAND ----------
 import mlflow
 from mlflow.models import infer_signature
+from mlflow.utils.environment import _mlflow_conda_env
 from pyspark.sql import SparkSession
 from sklearn.pipeline import Pipeline
-from mlflow.utils.environment import _mlflow_conda_env
 
 from hotel_reservations.config import ProjectConfig
 from hotel_reservations.data_processor import DataProcessor
@@ -17,9 +17,7 @@ from hotel_reservations.reservations_model import ReservationsModel
 
 # COMMAND ----------
 mlflow.set_tracking_uri("databricks")
-mlflow.set_registry_uri(
-    "databricks-uc"
-)  # It must be -uc for registering models to Unity Catalog
+mlflow.set_registry_uri("databricks-uc")  # It must be -uc for registering models to Unity Catalog
 
 # COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
@@ -29,12 +27,8 @@ spark = SparkSession.builder.getOrCreate()
 
 # COMMAND ----------
 # Load training and testing sets from Databricks tables
-train_set = spark.table(
-    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
-).toPandas()
-test_set = spark.table(
-    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
-).toPandas()
+train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs").toPandas()
+test_set = spark.table(f"{config.catalog_name}.{config.schema_name}.test_set_vs").toPandas()
 
 y_train = train_set[[config.target]]
 X_train = train_set.drop(columns=[config.target, "update_timestamp_utc"])
@@ -80,9 +74,7 @@ with mlflow.start_run(
     mlflow.log_metric("precision", precision)
     signature = infer_signature(model_input=X_train, model_output=y_pred)
 
-    train_set_spark = spark.table(
-        f"{config.catalog_name}.{config.schema_name}.train_set_vs"
-    )
+    train_set_spark = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs")
     dataset = mlflow.data.from_spark(
         train_set_spark,
         table_name=f"{config.catalog_name}.{config.schema_name}.train_set_vs",

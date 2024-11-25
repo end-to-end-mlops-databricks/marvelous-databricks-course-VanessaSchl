@@ -38,13 +38,9 @@ test_set_with_timestamp = spark.createDataFrame(test_set).withColumn(
     "update_timestamp_utc", to_utc_timestamp(current_timestamp(), "UTC")
 )
 
-train_set_with_timestamp.write.mode("append").saveAsTable(
-    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
-)
+train_set_with_timestamp.write.mode("append").saveAsTable(f"{config.catalog_name}.{config.schema_name}.train_set_vs")
 
-test_set_with_timestamp.write.mode("append").saveAsTable(
-    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
-)
+test_set_with_timestamp.write.mode("append").saveAsTable(f"{config.catalog_name}.{config.schema_name}.test_set_vs")
 
 spark.sql(
     f"ALTER TABLE {config.catalog_name}.{config.schema_name}.train_set_vs "
