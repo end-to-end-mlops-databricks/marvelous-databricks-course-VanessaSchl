@@ -37,7 +37,7 @@ resources:
         - task_key: "preprocessing"
           existing_cluster_id: 1105-113609-pwvwi1rg
           spark_python_task:
-            python_file: "scripts/week5/preprocess.py"
+            python_file: "scripts/week5/preprocess_data.py"
             parameters:
               - "--root_path"
               - ${var.root_path}
