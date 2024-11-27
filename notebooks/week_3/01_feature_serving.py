@@ -25,7 +25,9 @@ from hotel_reservations.config import ProjectConfig
 # COMMAND ----------
 spark = SparkSession.builder.getOrCreate()
 
-token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+token = (
+    dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().get()
+)
 host = spark.conf.get("spark.databricks.workspaceUrl")
 
 # Initialize Databricks clients
@@ -47,11 +49,17 @@ config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
 # Define table names
 feature_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features_preds"
-online_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features_preds_online"
+online_table_name = (
+    f"{config.catalog_name}.{config.schema_name}.hotel_features_preds_online"
+)
 
 # Load training and test sets from Catalog
-train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs").toPandas()
-test_set = spark.table(f"{config.catalog_name}.{config.schema_name}.test_set_vs").toPandas()
+train_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.train_set_vs"
+).toPandas()
+test_set = spark.table(
+    f"{config.catalog_name}.{config.schema_name}.test_set_vs"
+).toPandas()
 
 df = pd.concat([train_set, test_set])
 
@@ -79,7 +87,9 @@ preds_df = df[
         "avg_price_per_room",
     ]
 ]
-preds_df["predicted_booking_status"] = pipeline.predict(df.drop(columns=[config.target]))
+preds_df["predicted_booking_status"] = pipeline.predict(
+    df.drop(columns=[config.target])
+)
 
 preds_df = spark.createDataFrame(preds_df)
 
@@ -104,12 +114,16 @@ spark.sql(
 spec = OnlineTableSpec(
     primary_key_columns=["Booking_ID"],
     source_table_full_name=feature_table_name,
-    run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict({"triggered": "true"}),
+    run_triggered=OnlineTableSpecTriggeredSchedulingPolicy.from_dict(
+        {"triggered": "true"}
+    ),
     perform_full_copy=False,
 )
 
 # Create the online table in Databricks
-online_table_pipeline = workspace.online_tables.create(name=online_table_name, spec=spec)
+online_table_pipeline = workspace.online_tables.create(
+    name=online_table_name, spec=spec
+)
 
 # COMMAND ----------
 # 3. Create feture look up and feature spec table feature table
@@ -124,7 +138,7 @@ features = [
             "no_of_week_nights",
             "no_of_previous_cancellations",
             "avg_price_per_room",
-            "predicted_booking_status_canceled",
+            "predicted_booking_status",
         ],
     )
 ]

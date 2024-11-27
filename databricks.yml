@@ -4,6 +4,104 @@
 
 bundle:
   name: marvelous-databricks-course-VanessaSchl
+  cluster_id: 1105-113609-pwvwi1rg
+
+artifacts:
+  default:
+    type: whl
+    build: python -m build
+    path: .
+
+variables:
+  root_path:
+    description: root_path for the target
+    default: /Workspace/Users/vanessa.schlotzig@swk.de/marvelous-databricks-course-VanessaSchl
+  git_sha:
+    description: git_sha
+    default: abcd
+  schedule_pause_status:
+    description: schedule pause status
+    default: UNPAUSED
+
+resources:
+  jobs:
+    hotel-reservations:
+      name: hotel-reservations-dev-workflow-vs
+      schedule:
+        quartz_cron_expression: "0 0 6 ? * MON"
+        timezone_id: "Europe/Berlin"
+        pause_status: ${var.schedule_pause_status}
+      tags:
+        project_name: "hotel-reservations"
+      tasks:
+        - task_key: "preprocessing"
+          existing_cluster_id: 1105-113609-pwvwi1rg
+          spark_python_task:
+            python_file: "scripts/week5/preprocess.py"
+            parameters:
+              - "--root_path"
+              - ${var.root_path}
+          libraries:
+           - whl: ./dist/*.whl
+        - task_key: if_refreshed
+          condition_task:
+            op: "EQUAL_TO"
+            left: "{{tasks.preprocessing.values.refreshed}}"
+            right: "1"
+          depends_on: 
+            - task_key: "preprocessing"
+        - task_key: "train_model"
+          depends_on: 
+            - task_key: "if_refreshed"
+              outcome: "true"
+          existing_cluster_id: 1105-113609-pwvwi1rg
+          spark_python_task:
+            python_file: "scripts/week5/train_model.py"
+            parameters:
+              - "--root_path"
+              - ${var.root_path}
+              - "--git_sha"
+              - ${var.git_sha}
+              - "--job_run_id"
+              - "{{job.id}}"
+          libraries: 
+            - whl: ./dist/*.whl
+        - task_key: "evaluate_model"
+          depends_on: 
+            - task_key: "train_model"
+          existing_cluster_id: 1105-113609-pwvwi1rg
+          spark_python_task:
+            python_file: "scripts/week5/evaluate_model.py"
+            parameters:
+              - "--root_path"
+              - ${var.root_path}
+              - "--new_model_uri"
+              - "{{tasks.train_model.values.new_model_uri}}"
+              - "--job_run_id"
+              - "{{job.id}}"
+              - "--git_sha"
+              - ${var.git_sha}
+          libraries: 
+            - whl: ./dist/*.whl
+        - task_key: model_update
+          condition_task:
+            op: "EQUAL_TO"
+            left: "{{tasks.evaluate_model.values.model_update}}"
+            right: "1"
+          depends_on: 
+            - task_key: "evaluate_model"
+        - task_key: "deploy_model"
+          depends_on: 
+            - task_key: "model_update"
+              outcome: "true"
+          existing_cluster_id: 1105-113609-pwvwi1rg
+          spark_python_task:
+            python_file: "scripts/week5/deploy_model.py"
+            parameters:
+              - "--root_path"
+              - ${var.root_path}              
+          libraries: 
+            - whl: ./dist/*.whl
 
 targets:
   dev:
@@ -11,9 +109,4 @@ targets:
     default: true
     workspace:
       host: https://adb-3462382944381210.10.azuredatabricks.net
-
-  ## Optionally, there could be 'staging' or 'prod' targets here.
-  #
-  # prod:
-  #   workspace:
-  #     host: https://adb-3462382944381210.10.azuredatabricks.net
+      root_path: /Workspace/Users/vanessa.schlotzig@swk.de/marvelous-databricks-course-VanessaSchl

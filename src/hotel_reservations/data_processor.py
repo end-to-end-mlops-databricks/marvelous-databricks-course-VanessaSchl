@@ -18,20 +18,24 @@ class DataProcessor(BaseEstimator, TransformerMixin):
             fe_features = []
         self.config = config  # Store the configuration
         self.fe_features = fe_features  # Store the feature engineering features
-        self.column_transformer = ColumnTransformer(  # Initialize the column transformer
-            transformers=[
-                (
-                    "cat",
-                    OneHotEncoder(handle_unknown="ignore"),
-                    self.config.cat_features,
-                ),
-                ("scale_num", StandardScaler(), self.config.num_features),
-                ("scale_fe", StandardScaler(), fe_features),
-            ],
-            remainder="drop",
+        self.column_transformer = (
+            ColumnTransformer(  # Initialize the column transformer
+                transformers=[
+                    (
+                        "cat",
+                        OneHotEncoder(handle_unknown="ignore"),
+                        self.config.cat_features,
+                    ),
+                    ("scale_num", StandardScaler(), self.config.num_features),
+                    ("scale_fe", StandardScaler(), fe_features),
+                ],
+                remainder="drop",
+            )
         )
 
-    def fit(self, X: pd.DataFrame, y: pd.DataFrame | None = None) -> BaseEstimator | TransformerMixin:
+    def fit(
+        self, X: pd.DataFrame, y: pd.DataFrame | None = None
+    ) -> BaseEstimator | TransformerMixin:
         """Fit method for the transformer."""
         self.column_transformer.fit(X, y)
         return self
@@ -44,5 +48,7 @@ class DataProcessor(BaseEstimator, TransformerMixin):
         self, X: pd.DataFrame, test_size: float = 0.2, random_state: int = 42
     ) -> tuple[pd.DataFrame, pd.DataFrame]:
         """Split the DataFrame (self.df) into training and test sets."""
-        train_set, test_set = train_test_split(X, test_size=test_size, random_state=random_state)
+        train_set, test_set = train_test_split(
+            X, test_size=test_size, random_state=random_state
+        )
         return train_set, test_set
