@@ -11,6 +11,7 @@ class ProjectConfig(BaseModel):
 
     num_features: List[str]
     cat_features: List[str]
+    pipeline_id: str
     target: str
     catalog_name: str
     schema_name: str

@@ -21,7 +21,6 @@ parser.add_argument(
 args = parser.parse_args()
 config_path = f"{args.root_path}/project_config.yml"
 config = ProjectConfig.from_yaml(config_path=config_path)
-pipeline_id = config.pipeline_id
 
 spark = SparkSession.builder.getOrCreate()
 
@@ -89,11 +88,11 @@ if affected_rows_train > 0 or affected_rows_test > 0:
     )
     refreshed = 1
     update_response = workspace.pipelines.start_update(
-        pipeline_id=pipeline_id, full_refresh=False
+        pipeline_id=config.pipeline_id, full_refresh=False
     )
     while True:
         update_info = workspace.pipelines.get_update(
-            pipeline_id=pipeline_id, update_id=update_response.update_id
+            pipeline_id=config.pipeline_id, update_id=update_response.update_id
         )
         state = update_info.update.state.value
         if state == "COMPLETED":
