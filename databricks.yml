@@ -5,6 +5,9 @@
 bundle:
   name: marvelous-databricks-course-VanessaSchl
   cluster_id: 1105-113609-pwvwi1rg
+  git:
+    origin_url: https://github.com/end-to-end-mlops-databricks/marvelous-databricks-course-VanessaSchl.git
+    branch: week5
 
 artifacts:
   default:
@@ -37,7 +40,7 @@ resources:
         - task_key: "preprocessing"
           existing_cluster_id: 1105-113609-pwvwi1rg
           spark_python_task:
-            python_file: "scripts/week5/preprocess_data.py"
+            python_file: "scripts/week_5/preprocess_data.py"
             parameters:
               - "--root_path"
               - ${var.root_path}
@@ -56,7 +59,7 @@ resources:
               outcome: "true"
           existing_cluster_id: 1105-113609-pwvwi1rg
           spark_python_task:
-            python_file: "scripts/week5/train_model.py"
+            python_file: "scripts/week_5/train_model.py"
             parameters:
               - "--root_path"
               - ${var.root_path}
@@ -71,7 +74,7 @@ resources:
             - task_key: "train_model"
           existing_cluster_id: 1105-113609-pwvwi1rg
           spark_python_task:
-            python_file: "scripts/week5/evaluate_model.py"
+            python_file: "scripts/week_5/evaluate_model.py"
             parameters:
               - "--root_path"
               - ${var.root_path}
@@ -96,7 +99,7 @@ resources:
               outcome: "true"
           existing_cluster_id: 1105-113609-pwvwi1rg
           spark_python_task:
-            python_file: "scripts/week5/deploy_model.py"
+            python_file: "scripts/week_5/deploy_model.py"
             parameters:
               - "--root_path"
               - ${var.root_path}              
