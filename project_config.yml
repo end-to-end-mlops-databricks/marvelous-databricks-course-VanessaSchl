@@ -1,6 +1,6 @@
 catalog_name: dev
 schema_name: datalab_1ai
-pipeline_id: "1"
+pipeline_id: "6f52655a-f667-40e1-a5f9-bc91959a3001"
 
 parameters:
   eta: 0.3
