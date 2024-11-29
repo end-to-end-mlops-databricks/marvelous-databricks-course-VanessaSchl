@@ -106,6 +106,12 @@ resources:
           libraries: 
             - whl: ./dist/*.whl
 
+sync:
+  include:
+    - "scripts/**/*.py"
+  paths:
+    - "scripts/**"
+
 targets:
   dev:
     mode: development
