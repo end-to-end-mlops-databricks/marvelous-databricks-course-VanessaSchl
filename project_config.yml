@@ -1,6 +1,6 @@
 catalog_name: dev
 schema_name: datalab_1ai
-pipeline_id: 1
+pipeline_id: "1"
 
 parameters:
   eta: 0.3
