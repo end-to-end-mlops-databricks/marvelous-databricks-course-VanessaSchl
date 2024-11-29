@@ -108,9 +108,7 @@ resources:
 
 sync:
   include:
-    - "scripts/**/*.py"
-  paths:
-    - "scripts/**"
+    - "./scripts/**/*.py"
 
 targets:
   dev:
