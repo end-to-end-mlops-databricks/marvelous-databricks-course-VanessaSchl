@@ -27,27 +27,10 @@ num_features:
   - no_of_previous_bookings_not_canceled
   - avg_price_per_room
   - no_of_special_requests
-  - type_of_meal_plan_meal_plan_1
-  - type_of_meal_plan_meal_plan_2
-  - type_of_meal_plan_meal_plan_3
-  - room_type_reserved_room_type_1
-  - room_type_reserved_room_type_2
-  - room_type_reserved_room_type_3
-  - room_type_reserved_room_type_4
-  - room_type_reserved_room_type_5
-  - room_type_reserved_room_type_6
-  - room_type_reserved_room_type_7
-  - market_segment_type_aviation
-  - market_segment_type_complementary
-  - market_segment_type_corporate
-  - market_segment_type_offline
-  - market_segment_type_online
 
 cat_features:
   - type_of_meal_plan
   - room_type_reserved
   - market_segment_type
 
-original_target: booking_status
-
-target: booking_status_canceled
+target: booking_status

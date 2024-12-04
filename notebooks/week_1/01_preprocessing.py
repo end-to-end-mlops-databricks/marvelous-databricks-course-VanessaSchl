@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-3.0.0-py3-none-any.whl  --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -36,38 +36,19 @@ print("Test set shape:", test_set.shape)
 
 # COMMAND ----------
 # Split data into features and target
-y_train = train_set[[config.original_target]]
-X_train = train_set.drop(columns=config.original_target)
+y_train = train_set[[config.target]]
+X_train = train_set.drop(columns=config.target)
 
-y_test = test_set[[config.original_target]]
-X_test = test_set.drop(columns=config.original_target)
+y_test = test_set[[config.target]]
+X_test = test_set.drop(columns=config.target)
 
 # COMMAND ----------
 # Preprocess the data
-X_train = data_processor.preprocess_data(
-    X=X_train,
-    encode_features="cat_features",
-    extract_features="num_features",
-    include_fe_features=True,
-)
-y_train = data_processor.preprocess_data(
-    X=y_train,
-    encode_features="original_target",
-    extract_features="target",
-    include_fe_features=False,
-)
-X_test = data_processor.preprocess_data(
-    X=X_test,
-    encode_features="cat_features",
-    extract_features="num_features",
-    include_fe_features=True,
-)
-y_test = data_processor.preprocess_data(
-    X=y_test,
-    encode_features="original_target",
-    extract_features="target",
-    include_fe_features=False,
-)
+data_processor.fit(X=X_train, y=y_train)
+X_train = data_processor.transform(X=X_train)
+y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
+X_test = data_processor.transform(X=X_test)
+y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
 
 # COMMAND ----------
 # Initialize and train the model

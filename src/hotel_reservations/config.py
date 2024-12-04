@@ -11,7 +11,6 @@ class ProjectConfig(BaseModel):
 
     num_features: List[str]
     cat_features: List[str]
-    original_target: str
     target: str
     catalog_name: str
     schema_name: str

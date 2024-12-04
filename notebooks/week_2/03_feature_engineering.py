@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %pip install ../hotel_reservations-2.2.0-py3-none-any.whl
+# MAGIC %pip install ../hotel_reservations-3.0.0-py3-none-any.whl --force-reinstall
 
 # COMMAND ----------
 dbutils.library.restartPython()
@@ -30,24 +30,16 @@ mlflow.set_tracking_uri("databricks")
 # COMMAND ----------
 config = ProjectConfig.from_yaml(config_path="../../project_config.yml")
 
-# Extract configuration details
-num_features = config.num_features
-original_target = config.original_target
-target = config.target
-parameters = config.parameters
-catalog_name = config.catalog_name
-schema_name = config.schema_name
-
 # Define table names and function name
-feature_table_name = f"{catalog_name}.{schema_name}.hotel_features"
-function_name = f"{catalog_name}.{schema_name}.calculate_stay_length"
+feature_table_name = f"{config.catalog_name}.{config.schema_name}.hotel_features"
+function_name = f"{config.catalog_name}.{config.schema_name}.calculate_stay_length"
 
 
 # COMMAND ----------
 # Create or replace the hotel_features table
 spark.sql(
     f"""
-CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
+CREATE OR REPLACE TABLE {config.catalog_name}.{config.schema_name}.hotel_features
 (Booking_ID STRING NOT NULL,
  no_of_previous_cancellations INT,
  avg_price_per_room FLOAT);
@@ -55,21 +47,23 @@ CREATE OR REPLACE TABLE {catalog_name}.{schema_name}.hotel_features
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
+    f"ALTER TABLE {config.catalog_name}.{config.schema_name}.hotel_features "
+    "ADD CONSTRAINT hotel_pk PRIMARY KEY(Booking_ID);"
 )
 
 spark.sql(
-    f"ALTER TABLE {catalog_name}.{schema_name}.hotel_features " "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
+    f"ALTER TABLE {config.catalog_name}.{config.schema_name}.hotel_features "
+    "SET TBLPROPERTIES (delta.enableChangeDataFeed = true);"
 )
 
 # Insert data into the feature table from both train and test sets
 spark.sql(
-    f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {catalog_name}.{schema_name}.train_set_vs"
+    f"INSERT INTO {config.catalog_name}.{config.schema_name}.hotel_features "
+    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {config.catalog_name}.{config.schema_name}.train_set_vs"
 )
 spark.sql(
-    f"INSERT INTO {catalog_name}.{schema_name}.hotel_features "
-    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {catalog_name}.{schema_name}.test_set_vs"
+    f"INSERT INTO {config.catalog_name}.{config.schema_name}.hotel_features "
+    f"SELECT Booking_ID, no_of_previous_cancellations, avg_price_per_room FROM {config.catalog_name}.{config.schema_name}.test_set_vs"
 )
 
 # COMMAND ----------
@@ -86,10 +80,10 @@ $$
 )
 # COMMAND ----------
 # Load training and test sets
-train_set = spark.table(f"{catalog_name}.{schema_name}.train_set_vs").drop(
+train_set = spark.table(f"{config.catalog_name}.{config.schema_name}.train_set_vs").drop(
     "no_of_previous_cancellations", "avg_price_per_room"
 )
-test_set = spark.table(f"{catalog_name}.{schema_name}.test_set_vs").toPandas()
+test_set = spark.table(f"{config.catalog_name}.{config.schema_name}.test_set_vs").toPandas()
 
 # Cast no_of_weekend_nights and no_of_week_nights to int for the function input
 train_set = train_set.withColumn("no_of_weekend_nights", train_set["no_of_weekend_nights"].cast("int"))
@@ -99,7 +93,7 @@ train_set = train_set.withColumn("no_of_week_nights", train_set["no_of_week_nigh
 # Feature engineering setup
 training_set = fe.create_training_set(
     df=train_set,
-    label=original_target,
+    label=config.target,
     feature_lookups=[
         FeatureLookup(
             table_name=feature_table_name,
@@ -126,11 +120,11 @@ test_set["no_of_nights"] = test_set["no_of_weekend_nights"] + test_set["no_of_we
 
 # COMMAND ----------
 # Split features and target
-y_train = training_df[[config.original_target]]
-X_train = training_df.drop(columns=config.original_target)
+y_train = training_df[[config.target]]
+X_train = training_df.drop(columns=config.target)
 
-y_test = test_set[[config.original_target]]
-X_test = test_set.drop(columns=config.original_target)
+y_test = test_set[[config.target]]
+X_test = test_set.drop(columns=config.target)
 
 # COMMAND ----------
 # Setup model pipeline
@@ -151,20 +145,10 @@ GIT_SHA = "ffa63b430205ff7"
 
 with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as run:
     run_id = run.info.run_id
-    y_train = pipeline.named_steps["preprocessor"].preprocess_data(
-        X=y_train,
-        encode_features="original_target",
-        extract_features="target",
-        include_fe_features=False,
-    )
+    y_train = y_train.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
-    y_test = pipeline.named_steps["preprocessor"].preprocess_data(
-        X=y_test,
-        encode_features="original_target",
-        extract_features="target",
-        include_fe_features=False,
-    )
+    y_test = y_test.replace({"Not_Canceled": "0", "Canceled": "1"}).astype(int).values
 
     # Evaluate the model performance
     accuracy, precision = pipeline.named_steps["classifier"].evaluate(y_test, y_pred)
@@ -174,7 +158,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
 
     # Log model parameters, metrics, and model
     mlflow.log_param("model_type", "SVC with preprocessing")
-    mlflow.log_params(parameters)
+    mlflow.log_params(config.parameters)
     mlflow.log_metric("accuracy", accuracy)
     mlflow.log_metric("precision", precision)
     signature = infer_signature(model_input=X_train, model_output=y_pred)
@@ -183,6 +167,7 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
     fe.log_model(
         model=pipeline,
         flavor=mlflow.sklearn,
+        code_paths=["../hotel_reservations-3.0.0-py3-none-any.whl"],
         artifact_path="svc-pipeline-model-fe",
         training_set=training_set,
     )
@@ -194,5 +179,5 @@ with mlflow.start_run(tags={"branch": "week1+2", "git_sha": f"{GIT_SHA}"}) as ru
 
 mlflow.register_model(
     model_uri=model_uri,
-    name=f"{catalog_name}.{schema_name}.hotel_reservations_model_fe",
+    name=f"{config.catalog_name}.{config.schema_name}.vs_hotel_reservations_model_fe",
 )
